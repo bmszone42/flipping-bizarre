@@ -7,25 +7,25 @@ from datetime import datetime
 
 # Fetching the historical data
 @st.cache_data
-def download_data(symbols):
+def download_data(symbols, period='max'):
     data = {}
     for symbol in symbols:
-        ticker = yf.Ticker(symbol)
-        
-        # get stock price data
-        history = ticker.history(period='max')
-        
-        # get dividends, align with history data, and rename column
-        dividends = ticker.dividends
-        aligned_dividends = pd.DataFrame(index=history.index)
-        aligned_dividends[f'{symbol}_Dividends'] = dividends
-        
-        # combine history and dividend data
-        df = pd.concat([history, aligned_dividends], axis=1)
-        
-        data[symbol] = df
-    return data
+        try:
+            ticker = yf.Ticker(symbol)
+            
+            # get stock price data
+            history = ticker.history(period=period)
+            
+            # get dividends and rename the series name
+            dividends = ticker.dividends.rename(f'{symbol}_Dividends')
 
+            # combine history and dividend data
+            df = pd.concat([history, dividends], axis=1)
+            
+            data[symbol] = df
+        except:
+            st.error(f"Failed to download data for symbol: {symbol}. Please check if the symbol is correct.")
+    return data
 
 # Extracting the dividend data
 def get_dividends(df):
