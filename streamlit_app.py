@@ -88,12 +88,12 @@ def main():
 def perform_analysis(symbol, data, color):
     st.subheader(symbol)
 
-    prices = data[symbol]['Close']
+    prices = data[symbol]['Close'].astype(float) 
     fig = px.line(prices, line_shape="linear", color_discrete_sequence=[color])
     fig.update_yaxes(title='Price (Dollars)')
     st.plotly_chart(fig)
 
-    divs = get_dividends(data[symbol])
+    divs = get_dividends(data[symbol]).astype(float)
     if not divs.empty:
         plot_dividends(divs, color)
         show_dividend_targets(divs, prices)
@@ -115,32 +115,28 @@ def show_dividend_targets(divs, prices):
     results = get_days_to_target(divs, prices, targets)
     st.write(pd.DataFrame(results, index=[f'{t*100}%' for t in targets]))
 
+# Calculate metrics
 def calculate_dividend_metrics(divs, prices):
-    # Convert prices to numeric data and handle non-numeric or missing values as NaN
-    prices = pd.to_numeric(prices, errors='coerce')
-    prices.dropna(inplace=True)
-    
-    quote_data = list(zip(prices.index.strftime("%Y-%m-%d"), prices.values.tolist()))
-    high_prices = [quote_data[max(i-365, 0):i] for i in range(1, len(quote_data))]
-    
-    results = []
-    for date, div in divs.itertuples():
-        year = date.strftime("%Y")
-        target = prices.iloc[0] + div
-        to_reach_50 = days_to_reach(high_prices, target * 0.5)
-        to_reach_75 = days_to_reach(high_prices, target * 0.75) 
-        to_reach_100 = days_to_reach(high_prices, target)
-        results.append([year, to_reach_50, to_reach_75, to_reach_100])
-    
-    # Filter out rows containing non-numeric values before calculating averages
-    numeric_results = [row for row in results if all(isinstance(value, (int, float)) for value in row[1:])]
-    
-    # Calculate averages only for rows with numeric data
-    if numeric_results:
-        averages = [sum(x)/len(x) for x in zip(*numeric_results)]
-        results.append(["Average"] + averages[1:])
-    
-    return quote_data, results
+
+  clean_prices = prices.dropna().values  
+  high_prices = [clean_prices[max(i-365, 0):i] for i in range(1, len(clean_prices))]
+
+  results = []
+  for date, div in divs.iterrows():
+    year = date.year
+    target = clean_prices[0] + div
+    to_reach_50 = days_to_reach(high_prices, target * 0.5, prices=clean_prices)
+    to_reach_75 = days_to_reach(high_prices, target * 0.75, prices=clean_prices)
+    to_reach_100 = days_to_reach(high_prices, target, prices=clean_prices)
+    results.append([year, to_reach_50, to_reach_75, to_reach_100])
+
+  numeric_results = [row for row in results if all(isinstance(value, (int, float)) for value in row[1:])]
+
+  if numeric_results:
+    averages = [sum(x)/len(x) for x in zip(*numeric_results)]
+    results.append(["Average"] + averages[1:])
+  
+  return results
 
 def days_to_reach(high_prices, target):
     for i, prices in enumerate(high_prices):
