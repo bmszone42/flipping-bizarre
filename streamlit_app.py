@@ -27,10 +27,22 @@ def setup_streamlit():
     st.sidebar.header('Input')
     years = st.sidebar.slider('Number of years', 1, 10, 5)  
     symbols = st.sidebar.multiselect('Stock symbols', options=['T', 'MSFT', 'AAPL']) 
-    return years, symbols
+    
+    # Add text input for additional stock symbols
+    new_symbol = st.sidebar.text_input('Add a stock symbol', '')
+
+    # Add a 'Search Now' button
+    search_button = st.sidebar.button('Search Now')
+
+    return years, symbols, new_symbol, search_button
 
 def main():
-    years, symbols = setup_streamlit()
+    years, symbols, new_symbol, search_button = setup_streamlit()
+
+    # If 'Search Now' is clicked, add the new symbol to the symbols list
+    if search_button and new_symbol:
+        symbols.append(new_symbol)
+
     data = download_data(symbols, years)
 
     st.header('Analysis')
