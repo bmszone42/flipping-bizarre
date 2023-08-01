@@ -10,8 +10,6 @@ from datetime import datetime
 @st.cache_data
 def download_data(symbols, period='max'):
     data = {}
-    # Create an empty DataFrame with all required columns
-    empty_data = pd.DataFrame(columns=['Closing Price', '52 WK Hi', '52 WK Lo', '1 YR Target', 'Dividend', 'Yield', '30 Day Ave. Vol'])
     for symbol in symbols:
         try:
             # Check if the symbol is valid
@@ -21,24 +19,12 @@ def download_data(symbols, period='max'):
             
             ticker = yf.Ticker(symbol)
             history = ticker.history(period=period)
-            
-            # Add new columns: 52 WK Hi, 52 WK Lo, 1 YR Target, Dividend, Yield, 30 Day Ave. Vol
-            df = pd.DataFrame()
-            df['Closing Price'] = history['Close']
-            df['52 WK Hi'] = ticker.info['fiftyTwoWeekHigh']
-            df['52 WK Lo'] = ticker.info['fiftyTwoWeekLow']
-            df['1 YR Target'] = ticker.info['targetMeanPrice']
-            df['Dividend'] = ticker.info.get('dividendRate', np.nan)  # Handle missing dividend data
-            df['Yield'] = ticker.info.get('dividendYield', np.nan)  # Handle missing dividend data
-            df['30 Day Ave. Vol'] = ticker.info.get('averageDailyVolume30Day', np.nan)  # Handle missing volume data
-            
+            dividends = ticker.dividends.rename(f'{symbol}_Dividends')
+            df = pd.concat([history, dividends], axis=1)
             data[symbol] = df
         except:
-            # Use empty DataFrame if symbol data is missing
-            data[symbol] = empty_data.copy()
             st.error(f"Failed to download data for symbol: {symbol}. Please check if the symbol is correct.")
     return data
-
 
 
 # Extracting the dividend data
