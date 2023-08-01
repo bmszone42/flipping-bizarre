@@ -90,7 +90,7 @@ def perform_analysis(symbol, data, color):
 
     prices = data[symbol]['Close'].astype(float) 
     fig = px.line(prices, line_shape="linear", color_discrete_sequence=[color])
-    fig.update_yaxes(title='Price (Dollars)')
+    fig.update_yaxes(title='Price ($)')
     st.plotly_chart(fig)
 
     divs = get_dividends(data[symbol]).astype(float)
@@ -107,7 +107,7 @@ def plot_dividends(divs, color):
     fig = go.Figure()
     for column in divs.columns:
         fig.add_trace(go.Bar(x=divs.index, y=divs[column], name=column, marker_color=color))
-    fig.update_layout(yaxis_title="Price in Dollars")
+    fig.update_layout(yaxis_title="Price ($) ")
     st.plotly_chart(fig)
 
 def show_dividend_targets(divs, prices):
