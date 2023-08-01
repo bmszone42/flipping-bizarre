@@ -47,6 +47,9 @@ def setup_streamlit():
     st.title('Dividend Stock Analysis')  
     st.sidebar.header('Input')
 
+    # Add a dropdown to select period
+    period = st.sidebar.selectbox('Period', options=['1d', '5d', '1mo', '3mo', '6mo', '1y', '2y', '5y', '10y', 'ytd', 'max'], index=10)
+
     # Default symbols set to the five dividend-paying stocks
     symbols = st.sidebar.multiselect('Stock symbols', options=['KO', 'PG', 'JNJ', 'MCD', 'PEP'], default=['KO', 'PG', 'JNJ', 'MCD', 'PEP']) 
 
@@ -56,10 +59,10 @@ def setup_streamlit():
     # Add a 'Search Now' button
     search_button = st.sidebar.button('Search Now')
 
-    # Add a dropdown to select period
-    period = st.sidebar.selectbox('Period', options=['1d', '5d', '1mo', '3mo', '6mo', '1y', '2y', '5y', '10y', 'ytd', 'max'], index=10)
+    # Add a dropdown to select plot color
+    color = st.sidebar.selectbox('Select plot color', options=['red', 'green', 'blue', 'purple'], index=0)
 
-    return symbols, new_symbol, search_button, period
+    return period, symbols, new_symbol, search_button, color
 
 def main():
     symbols, new_symbol, search_button, period = setup_streamlit()
@@ -79,19 +82,21 @@ def main():
     st.write(combined)
 
 
-def perform_analysis(symbol, data):
+def perform_analysis(symbol, data, color):
     st.subheader(symbol)
-    
+
     prices = data[symbol]['Close']
-    fig = px.line(prices)
+    fig = px.line(prices, line_shape="linear", line_color=color)
+    fig.update_yaxes(title='Price (Dollars)')
     st.plotly_chart(fig)
 
     divs = get_dividends(data[symbol])
     if not divs.empty:
-        plot_dividends(divs)
+        plot_dividends(divs, color)
         show_dividend_targets(divs, prices)
     else:
         st.write("No dividend data available for this stock.")
+
 
 def plot_dividends(divs):
     fig = px.bar(divs, x=divs.index, y=divs.columns)
