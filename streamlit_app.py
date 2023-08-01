@@ -40,8 +40,16 @@ def get_days_to_target(divs, prices, targets):
     if divs.empty:
         return {f'{target*100}%': None for target in targets}
     else:
-        div = divs.iloc[0,0]
-        return {f'{target*100}%': min((i for i, price in enumerate(prices) if price > target * div), default=None) for target in targets}
+        div_prices = pd.merge(prices, divs, left_index=True, right_index=True, how='inner')
+
+        results = {}
+        for target in targets:
+            target_price = div_prices['Close'] * (1 + target * div_prices['Dividends'])
+            days_to_reach_value = min((i+1 for i, price in enumerate(target_price) if price > div_prices['Close'][0]), default=None)
+            results[f'{target*100}%'] = days_to_reach_value
+        
+        return results
+
 
 def setup_streamlit():
     st.title('Dividend Stock Analysis')  
