@@ -118,6 +118,7 @@ def show_dividend_targets(divs, prices):
 def calculate_dividend_metrics(divs, prices):
     # Convert prices to numeric data to ensure it contains only numeric values
     prices = pd.to_numeric(prices, errors='coerce')
+    print(prices.dtype)
     prices.dropna(inplace=True)
     
     quote_data = list(zip(prices.index.strftime("%Y-%m-%d"), prices.values.tolist()))
