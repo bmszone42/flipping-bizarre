@@ -28,8 +28,12 @@ def get_dividends(df):
 
 # Calculating the days to reach dividend target
 def get_days_to_target(divs, prices, targets):
-    div = divs.iloc[0,0]
-    return {f'{target*100}%': min(i for i, price in enumerate(prices) if price > target * div) for target in targets}
+    if divs.empty:
+        return {f'{target*100}%': None for target in targets}
+    else:
+        div = divs.iloc[0,0]
+        return {f'{target*100}%': min((i for i, price in enumerate(prices) if price > target * div), default=None) for target in targets}
+
 
 def setup_streamlit():
     st.title('Dividend Stock Analysis')  
