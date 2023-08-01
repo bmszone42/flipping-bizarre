@@ -5,79 +5,64 @@ import numpy as np
 import plotly.express as px
 from datetime import datetime
 
-# Download historical data and cache
-@st.cache_data
+# Fetching the historical data
 def download_data(symbols, years):
-    data = {}
     end = datetime.today()
     start = end - pd.DateOffset(years=years)
-    for symbol in symbols:
-        data[symbol] = yf.download(symbol, start=start, end=end)
-    return data
+    return {symbol: yf.download(symbol, start=start, end=end) for symbol in symbols}
 
-# Extract dividend data 
+# Extracting the dividend data
 def get_dividends(df):
     div_cols = [col for col in df.columns if 'Dividend' in col]
-    if len(div_cols) == 0:
-        return pd.DataFrame()  # Return an empty DataFrame if no dividend columns are found
-    return df[div_cols]
+    return df[div_cols] if div_cols else pd.DataFrame()
 
-# Calculate days to reach dividend target 
+# Calculating the days to reach dividend target
 def get_days_to_target(divs, prices, targets):
+    div = divs.iloc[0,0]
+    return {f'{target*100}%': min(i for i, price in enumerate(prices) if price > target * div) for target in targets}
 
-    days = {}
-    
-    for target in targets:
-      
-        # Extract scalar dividend value
-        div = divs.iloc[0,0]  
-        
-        days[f'{target*100}%'] = min(i for i, price in enumerate(prices) if price > target * div)
-        
-    return days
+# Streamlit setup
+def setup_streamlit():
+    st.title('Dividend Stock Analysis')  
+    st.sidebar.header('Input')
+    years = st.sidebar.slider('Number of years', 1, 10, 5)  
+    symbols = st.sidebar.multiselect('Stock symbols', options=['T', 'MSFT', 'AAPL']) 
+    return years, symbols
 
-# App title
-st.title('Dividend Stock Analysis')  
+def main():
+    years, symbols = setup_streamlit()
+    data = download_data(symbols, years)
 
-# Sidebar with controls
-st.sidebar.header('Input')
-years = st.sidebar.slider('Number of years', 1, 10, 5)  
-symbols = st.sidebar.multiselect('Stock symbols', options=['T', 'MSFT', 'AAPL']) 
+    st.header('Analysis')
+    for symbol in symbols:
+        perform_analysis(symbol, data)
 
-# Load data on demand
-data = download_data(symbols, years)
+    st.header('Combined view')
+    combined = pd.concat([get_dividends(data[symbol]) for symbol in symbols], axis=1)
+    st.write(combined)
 
-# Analysis section
-st.header('Analysis')
-for symbol in symbols:
-
-    # Print stock name  
+def perform_analysis(symbol, data):
     st.subheader(symbol)
     
-    # Plot historical prices
     prices = data[symbol]['Close']
     fig = px.line(prices)
     st.plotly_chart(fig)
 
-    # Extract dividends
     divs = get_dividends(data[symbol])
-    
-    # Check if dividends are available
     if not divs.empty:
-        # Plot dividends
-        fig = px.bar(divs, x=divs.index, y=divs.columns)
-        st.plotly_chart(fig)
-        
-        # Dividend targets 
-        targets = [0.5, 0.75, 1.0]
-        results = get_days_to_target(divs, prices, targets)
-
-        # Print days to target
-        st.write(pd.DataFrame(results, index=[f'{t*100}%' for t in targets]))
+        plot_dividends(divs)
+        show_dividend_targets(divs, prices)
     else:
         st.write("No dividend data available for this stock.")
-    
-# Combined view 
-st.header('Combined view')
-combined = pd.concat([get_dividends(data[symbol]) for symbol in symbols], axis=1)
-st.write(combined)
+
+def plot_dividends(divs):
+    fig = px.bar(divs, x=divs.index, y=divs.columns)
+    st.plotly_chart(fig)
+
+def show_dividend_targets(divs, prices):
+    targets = [0.5, 0.75, 1.0]
+    results = get_days_to_target(divs, prices, targets)
+    st.write(pd.DataFrame(results, index=[f'{t*100}%' for t in targets]))
+
+if __name__ == "__main__":
+    main()
