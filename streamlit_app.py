@@ -11,8 +11,11 @@ def download_data(symbols):
 
 # Extracting the dividend data
 def get_dividends(df):
-    div_cols = [col for col in df.columns if 'Dividend' in col]
-    return df[div_cols] if div_cols else pd.DataFrame()
+    if 'Dividends' in df.columns:
+        return df[['Dividends']]
+    else:
+        return pd.DataFrame()
+
 
 # Calculating the days to reach dividend target
 def get_days_to_target(divs, prices, targets):
