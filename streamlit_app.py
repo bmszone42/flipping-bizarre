@@ -76,6 +76,9 @@ def perform_analysis(symbol, data, color):
 
     divs = get_dividends(data[symbol]).astype(float)
     if not divs.empty:
+        div_dates = divs.index
+        # Add stars to the price graph for dividend payment dates
+        fig.add_trace(go.Scatter(x=div_dates, y=prices[div_dates], mode='markers', marker=dict(symbol='star', size=12, color=color, line=dict(width=2, color='DarkSlateGrey'))))
         plot_dividends(divs, color)
         show_dividend_targets(divs, prices)
         quote_data, results = calculate_dividend_metrics(divs, prices)
