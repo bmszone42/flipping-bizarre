@@ -174,7 +174,11 @@ def main():
 
     data = download_data(symbols, period)
     st.header('Data view')
-    st.write(data)
+    
+    # Displaying the first 5 rows for each stock in the DataFrame
+    for symbol, df in data.items():
+        st.subheader(symbol)
+        st.write(df.head())
 
     st.header('Analysis')
     for symbol in symbols:
