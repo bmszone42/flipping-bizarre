@@ -112,5 +112,35 @@ def show_dividend_targets(divs, prices):
     results = get_days_to_target(divs, prices, targets)
     st.write(pd.DataFrame(results, index=[f'{t*100}%' for t in targets]))
 
+def calculate_dividend_metrics(divs, prices):
+    quote_data = list(zip(prices.index.strftime("%Y-%m-%d"), prices.values.tolist()))
+    high_prices = [quote_data[max(i-365, 0):i] for i in range(1, len(quote_data))]
+    
+    results = []
+    for date, div in divs.itertuples():
+        year = date.strftime("%Y")
+        target = prices[0] + div
+        to_reach_50 = days_to_reach(high_prices, target * 0.5)
+        to_reach_75 = days_to_reach(high_prices, target * 0.75) 
+        to_reach_100 = days_to_reach(high_prices, target)
+        results.append([year, to_reach_50, to_reach_75, to_reach_100])
+    
+    averages = [sum(x)/len(x) for x in zip(*results)]
+    results.append(["Average"] + averages[1:])
+    
+    return quote_data, results
+
+def get_dividend_for_date(div_data, date):
+    for div_date, div in div_data:
+        if div_date == date.strftime("%Y-%m-%d"):
+            return div
+    return None
+
+def days_to_reach(high_prices, target):
+    for i, prices in enumerate(high_prices):
+        if max(prices) >= target:
+            return i+1
+    return 0
+
 if __name__ == "__main__":
     main()
