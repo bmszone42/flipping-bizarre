@@ -87,34 +87,9 @@ def plot_dividends(divs, color):
     fig = go.Figure()
     for column in divs.columns:
         fig.add_trace(go.Bar(x=divs.index, y=divs[column], name=column, marker_color=color))
-    
-    # Add dividend dates as annotations on the graph
-    for date, dividend in divs.iterrows():
-        for column, value in dividend.items():
-            if not pd.isna(value):
-                fig.add_annotation(
-                    go.layout.Annotation(
-                        x=date,
-                        y=value,
-                        text=f'{value:.2f}',
-                        showarrow=True,
-                        font=dict(size=10),
-                        align='center',
-                        arrowhead=2,
-                        arrowsize=1,
-                        arrowwidth=2,
-                        arrowcolor='black',
-                        ax=0,
-                        ay=-40,
-                        bordercolor='black',
-                        borderwidth=1,
-                        borderpad=2,
-                        bgcolor='white'
-                    )
-                )
-
     fig.update_layout(yaxis_title="Price ($)")
     st.plotly_chart(fig)
+
 
 
 def show_dividend_targets(divs, prices):
