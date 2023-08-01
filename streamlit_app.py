@@ -18,6 +18,8 @@ def download_data(symbols, years):
 # Extract dividend data 
 def get_dividends(df):
     div_cols = [col for col in df.columns if 'Dividend' in col]
+    if len(div_cols) == 0:
+        return pd.DataFrame()  # Return an empty DataFrame if no dividend columns are found
     return df[div_cols]
 
 # Calculate days to reach dividend target 
@@ -60,16 +62,20 @@ for symbol in symbols:
     # Extract dividends
     divs = get_dividends(data[symbol])
     
-    # Plot dividends
-    fig = px.bar(divs, x=divs.index, y=divs.columns)
-    st.plotly_chart(fig)
-    
-    # Dividend targets 
-    targets = [0.5, 0.75, 1.0]
-    results = get_days_to_target(divs, prices, targets)
+    # Check if dividends are available
+    if not divs.empty:
+        # Plot dividends
+        fig = px.bar(divs, x=divs.index, y=divs.columns)
+        st.plotly_chart(fig)
+        
+        # Dividend targets 
+        targets = [0.5, 0.75, 1.0]
+        results = get_days_to_target(divs, prices, targets)
 
-    # Print days to target
-    st.write(pd.DataFrame(results, index=[f'{t*100}%' for t in targets]))
+        # Print days to target
+        st.write(pd.DataFrame(results, index=[f'{t*100}%' for t in targets]))
+    else:
+        st.write("No dividend data available for this stock.")
     
 # Combined view 
 st.header('Combined view')
