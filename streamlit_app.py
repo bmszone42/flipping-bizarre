@@ -116,9 +116,8 @@ def show_dividend_targets(divs, prices):
     st.write(pd.DataFrame(results, index=[f'{t*100}%' for t in targets]))
 
 def calculate_dividend_metrics(divs, prices):
-    # Convert prices to numeric data to ensure it contains only numeric values
+    # Convert prices to numeric data and handle non-numeric values as NaN
     prices = pd.to_numeric(prices, errors='coerce')
-    print(prices.dtype)
     prices.dropna(inplace=True)
     
     quote_data = list(zip(prices.index.strftime("%Y-%m-%d"), prices.values.tolist()))
@@ -138,17 +137,19 @@ def calculate_dividend_metrics(divs, prices):
     
     return quote_data, results
 
+def days_to_reach(high_prices, target):
+    for i, prices in enumerate(high_prices):
+        if max(prices) >= target:
+            return i+1
+    return 0
+
+
 def get_dividend_for_date(div_data, date):
     for div_date, div in div_data:
         if div_date == date.strftime("%Y-%m-%d"):
             return div
     return None
 
-def days_to_reach(high_prices, target):
-    for i, prices in enumerate(high_prices):
-        if max(prices) >= target:
-            return i+1
-    return 0
 
 if __name__ == "__main__":
     main()
