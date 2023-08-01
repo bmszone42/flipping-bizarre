@@ -21,6 +21,15 @@ def download_data(symbols, period='max'):
             history = ticker.history(period=period)
             dividends = ticker.dividends.rename(f'{symbol}_Dividends')
             df = pd.concat([history, dividends], axis=1)
+            
+            # Add new columns: 52 WK Hi, 52 WK Lo, 1 YR Target, Dividend, Yield, 30 Day Ave. Vol
+            df['52 WK Hi'] = ticker.info['fiftyTwoWeekHigh']
+            df['52 WK Lo'] = ticker.info['fiftyTwoWeekLow']
+            df['1 YR Target'] = ticker.info['targetMeanPrice']
+            df['Dividend'] = ticker.info['dividendRate']
+            df['Yield'] = ticker.info['dividendYield']
+            df['30 Day Ave. Vol'] = ticker.info['averageDailyVolume30Day']
+            
             data[symbol] = df
         except:
             st.error(f"Failed to download data for symbol: {symbol}. Please check if the symbol is correct.")
