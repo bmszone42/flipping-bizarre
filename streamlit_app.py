@@ -10,6 +10,8 @@ from datetime import datetime
 @st.cache_data
 def download_data(symbols, period='max'):
     data = {}
+    # Create an empty DataFrame with all required columns
+    empty_data = pd.DataFrame(columns=['Closing Price', '52 WK Hi', '52 WK Lo', '1 YR Target', 'Dividend', 'Yield', '30 Day Ave. Vol'])
     for symbol in symbols:
         try:
             # Check if the symbol is valid
@@ -32,6 +34,8 @@ def download_data(symbols, period='max'):
             
             data[symbol] = df
         except:
+            # Use empty DataFrame if symbol data is missing
+            data[symbol] = empty_data.copy()
             st.error(f"Failed to download data for symbol: {symbol}. Please check if the symbol is correct.")
     return data
 
