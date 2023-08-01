@@ -35,7 +35,6 @@ def get_dividends(df):
         return pd.DataFrame()
 
 
-# Calculating the days to reach dividend target
 def get_days_to_target(divs, prices, targets):
     if divs.empty:
         return {f'{target*100}%': None for target in targets}
@@ -47,7 +46,16 @@ def get_days_to_target(divs, prices, targets):
             target_price = div_prices['Close'] * (1 + target * div_prices['Dividends'])
             days_to_reach_value = min((i+1 for i, price in enumerate(target_price) if price > div_prices['Close'][0]), default=None)
             results[f'{target*100}%'] = days_to_reach_value
-        
+
+            # Additional code to visualize how the days are calculated
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(x=div_prices.index, y=div_prices['Close'], mode='lines', name='Price'))
+            fig.add_trace(go.Scatter(x=div_prices.index, y=target_price, mode='lines', name=f'{target*100}% Target Price', line=dict(dash='dash')))
+            fig.add_trace(go.Scatter(x=[div_prices.index[days_to_reach_value]], y=[target_price[days_to_reach_value]], mode='markers', name=f'{target*100}% Target Achieved', marker=dict(size=10)))
+
+            fig.update_layout(title=f'Days to Reach {target*100}% Dividend Target', xaxis_title='Date', yaxis_title='Price ($)')
+            st.plotly_chart(fig)
+
         return results
 
 
@@ -75,13 +83,18 @@ def setup_streamlit():
 def perform_analysis(symbol, data, color):
     st.subheader(symbol)
 
-    prices = data[symbol]['Close']
+    prices = data[symbol][['Close']]
     fig = px.line(prices, line_shape="linear", color_discrete_sequence=[color])
-    fig.update_yaxes(title='Price ($)')
-    st.plotly_chart(fig)
-
+    fig.update_yaxes(title='Price (Dollars)')
+    
     divs = get_dividends(data[symbol])
     if not divs.empty:
+        div_dates = divs.index
+        # Add stars to the price graph for dividend payment dates
+        fig.add_trace(go.Scatter(x=div_dates, y=prices.loc[div_dates, 'Close'], mode='markers', marker=dict(symbol='star', size=12, color=color, line=dict(width=2, color='DarkSlateGrey'))))
+
+        st.plotly_chart(fig)
+
         plot_dividends(divs, color)
         show_dividend_targets(divs, prices)
         quote_data, results = calculate_dividend_metrics(divs, prices)
@@ -89,7 +102,6 @@ def perform_analysis(symbol, data, color):
         st.write(pd.DataFrame(results, columns=["Year", "To Reach 50%", "To Reach 75%", "To Reach 100%"]))
     else:
         st.write("No dividend data available for this stock.")
-
     
 def plot_dividends(divs, color):
     fig = go.Figure()
