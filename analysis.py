@@ -23,8 +23,10 @@ def analyze(dividends, prices, years):
 
         data = []
         for _, div in divs.iterrows():
+
+            date = div['Date']
             
-            start = div.name - timedelta(days=10)
+            start = date - timedelta(days=10)
             end = div.name + timedelta(days=90)
             window = prices.loc[start:end]
 
