@@ -22,9 +22,16 @@ def get_dividends(df):
 
 # Calculate days to reach dividend target 
 def get_days_to_target(divs, prices, targets):
+
     days = {}
+    
     for target in targets:
-        days[f'{target*100}%'] = min(i for i, price in enumerate(prices) if price > target*divs)
+      
+        # Extract scalar dividend value
+        div = divs.iloc[0,0]  
+        
+        days[f'{target*100}%'] = min(i for i, price in enumerate(prices) if price > target * div)
+        
     return days
 
 # App title
