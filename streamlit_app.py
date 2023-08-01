@@ -42,7 +42,6 @@ def get_days_to_target(divs, prices, targets):
         div = divs.iloc[0,0]
         return {f'{target*100}%': min((i for i, price in enumerate(prices) if price > target * div), default=None) for target in targets}
 
-
 def setup_streamlit():
     st.title('Dividend Stock Analysis')  
     st.sidebar.header('Input')
@@ -56,16 +55,20 @@ def setup_streamlit():
     # Add text input for additional stock symbols
     new_symbol = st.sidebar.text_input('Add a stock symbol', '')
 
-    # Add a dropdown to select plot color
-    color = st.sidebar.selectbox('Select plot color', options=['red', 'green', 'blue', 'purple'], index=0)
-
     # Add a 'Search Now' button
     search_button = st.sidebar.button('Search Now')
+
+    # Add a dropdown to select plot color
+    color = st.sidebar.selectbox('Select plot color', options=['red', 'green', 'blue', 'purple'], index=0)
 
     return period, symbols, new_symbol, search_button, color
 
 def main():
-    symbols, new_symbol, search_button, period = setup_streamlit()
+    params = setup_streamlit()
+    if params is None:
+        return
+
+    period, symbols, new_symbol, search_button, color = params
 
     # If 'Search Now' is clicked, add the new symbol to the symbols list
     if search_button and new_symbol:
@@ -75,13 +78,12 @@ def main():
 
     st.header('Analysis')
     for symbol in symbols:
-        perform_analysis(symbol, data)
+        perform_analysis(symbol, data, color)
 
     st.header('Combined view')
     combined = pd.concat([data[symbol][f'{symbol}_Dividends'] for symbol in symbols], axis=1)
     st.write(combined)
-
-
+    
 def perform_analysis(symbol, data, color):
     st.subheader(symbol)
 
