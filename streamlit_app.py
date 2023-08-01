@@ -56,11 +56,11 @@ def setup_streamlit():
     # Add text input for additional stock symbols
     new_symbol = st.sidebar.text_input('Add a stock symbol', '')
 
-    # Add a 'Search Now' button
-    search_button = st.sidebar.button('Search Now')
-
     # Add a dropdown to select plot color
     color = st.sidebar.selectbox('Select plot color', options=['red', 'green', 'blue', 'purple'], index=0)
+
+    # Add a 'Search Now' button
+    search_button = st.sidebar.button('Search Now')
 
     return period, symbols, new_symbol, search_button, color
 
