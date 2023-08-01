@@ -3,6 +3,7 @@ import streamlit as st
 import pandas as pd 
 import numpy as np
 import plotly.express as px
+import plotly.graph_objects as go
 from datetime import datetime
 
 # Fetching the historical data
@@ -99,8 +100,10 @@ def perform_analysis(symbol, data, color):
     else:
         st.write("No dividend data available for this stock.")
 
-def plot_dividends(divs):
-    fig = px.bar(divs, x=divs.index, y=divs.columns)
+def plot_dividends(divs, color):
+    fig = go.Figure()
+    for column in divs.columns:
+        fig.add_trace(go.Bar(x=divs.index, y=divs[column], name=column, marker_color=color))
     st.plotly_chart(fig)
 
 def show_dividend_targets(divs, prices):
