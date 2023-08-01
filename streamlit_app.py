@@ -64,26 +64,7 @@ def setup_streamlit():
 
     return period, symbols, new_symbol, search_button, color
 
-def main():
-    params = setup_streamlit()
-    if params is None:
-        return
 
-    period, symbols, new_symbol, search_button, color = params
-
-    # If 'Search Now' is clicked, add the new symbol to the symbols list
-    if search_button and new_symbol:
-        symbols.append(new_symbol)
-
-    data = download_data(symbols, period)
-
-    st.header('Analysis')
-    for symbol in symbols:
-        perform_analysis(symbol, data, color)
-
-    st.header('Combined view')
-    combined = pd.concat([data[symbol][f'{symbol}_Dividends'] for symbol in symbols], axis=1)
-    st.write(combined)
     
 def perform_analysis(symbol, data, color):
     st.subheader(symbol)
@@ -153,6 +134,31 @@ def get_dividend_for_date(div_data, date):
             return div
     return None
 
+def main():
+    params = setup_streamlit()
+    if params is None:
+        return
 
+    period, symbols, new_symbol, search_button, color = params
+
+    # If 'Search Now' is clicked, add the new symbol to the symbols list
+    if search_button and new_symbol:
+        symbols.append(new_symbol)
+
+    data = download_data(symbols, period)
+
+    st.header('Analysis')
+    for symbol in symbols:
+        try:
+            perform_analysis(symbol, data, color)
+        except Exception as e:
+            print("Error occurred in perform_analysis:", e)  # Debug print statement
+
+    st.header('Combined view')
+    combined = pd.concat([data[symbol][f'{symbol}_Dividends'] for symbol in symbols], axis=1)
+    st.write(combined)
+
+if __name__ == "__main__":
+    main()
 if __name__ == "__main__":
     main()
