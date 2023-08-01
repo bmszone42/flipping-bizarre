@@ -21,11 +21,9 @@ def get_days_to_target(divs, prices, targets):
     div = divs.iloc[0,0]
     return {f'{target*100}%': min(i for i, price in enumerate(prices) if price > target * div) for target in targets}
 
-# Streamlit setup
 def setup_streamlit():
     st.title('Dividend Stock Analysis')  
     st.sidebar.header('Input')
-    years = st.sidebar.slider('Number of years', 1, 10, 5)  
 
     # Default symbols set to the five dividend-paying stocks
     symbols = st.sidebar.multiselect('Stock symbols', options=['KO', 'PG', 'JNJ', 'MCD', 'PEP'], default=['KO', 'PG', 'JNJ', 'MCD', 'PEP']) 
@@ -36,16 +34,17 @@ def setup_streamlit():
     # Add a 'Search Now' button
     search_button = st.sidebar.button('Search Now')
 
-    return years, symbols, new_symbol, search_button
+    return symbols, new_symbol, search_button
+
 
 def main():
-    years, symbols, new_symbol, search_button = setup_streamlit()
+    _, symbols, new_symbol, search_button = setup_streamlit()
 
     # If 'Search Now' is clicked, add the new symbol to the symbols list
     if search_button and new_symbol:
         symbols.append(new_symbol)
 
-    data = download_data(symbols, years)
+    data = download_data(symbols)
 
     st.header('Analysis')
     for symbol in symbols:
