@@ -27,7 +27,7 @@ def analyze(dividends, prices, years):
             date = div['Date']
             
             start = date - timedelta(days=10)
-            end = div.name + timedelta(days=90)
+            end = date + timedelta(days=90)
             window = prices.loc[start:end]
 
             amt = div['Dividends']  
