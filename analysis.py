@@ -35,9 +35,8 @@ def analyze(dividends, prices, years):
 
             days = [0, 0, 0]
             for i, p in enumerate(window['Close']):
-                if p >= thresholds[0] and days[0] == 0: days[0] = i+1
-                if p >= thresholds[1] and days[1] == 0: days[1] = i+1
-                if p >= thresholds[2] and days[2] == 0: days[2] = i+1
+               if p >= thresholds[0] and days[0] == 0:
+                  days[0] = i+1
 
             data.append(days)
 
