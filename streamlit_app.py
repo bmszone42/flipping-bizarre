@@ -65,8 +65,9 @@ def main():
         perform_analysis(symbol, data)
 
     st.header('Combined view')
-    combined = pd.concat([get_dividends(data[symbol]) for symbol in symbols], axis=1)
+    combined = pd.concat([data[symbol][f'{symbol}_Dividends'] for symbol in symbols], axis=1)
     st.write(combined)
+
 
 def perform_analysis(symbol, data):
     st.subheader(symbol)
