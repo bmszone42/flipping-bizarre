@@ -85,7 +85,11 @@ def perform_analysis(symbol, data, color):
 
     prices = data[symbol][['Close']]
     fig = px.line(prices, line_shape="linear", color_discrete_sequence=[color])
-    fig.update_yaxes(title='Price (Dollars)')
+    fig.update_yaxes(title='Closing Price ($)')
+
+    # Add a title to the price/date chart
+    fig.update_layout(title=f'Price Over Time for {symbol}', xaxis_title='Date')
+    
     
     divs = get_dividends(data[symbol])
     if not divs.empty:
@@ -94,6 +98,10 @@ def perform_analysis(symbol, data, color):
         fig.add_trace(go.Scatter(x=div_dates, y=prices.loc[div_dates, 'Close'], mode='markers', marker=dict(symbol='star', size=12, color=color, line=dict(width=2, color='DarkSlateGrey'))))
 
         st.plotly_chart(fig)
+
+        # Add a title to the div/date chart
+        div_chart_title = f'Dividends Over Time for {symbol}'
+        plot_dividends(divs, color, title=div_chart_title)
 
         plot_dividends(divs, color)
         show_dividend_targets(divs, prices)
