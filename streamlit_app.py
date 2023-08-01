@@ -26,8 +26,10 @@ def setup_streamlit():
     st.title('Dividend Stock Analysis')  
     st.sidebar.header('Input')
     years = st.sidebar.slider('Number of years', 1, 10, 5)  
-    symbols = st.sidebar.multiselect('Stock symbols', options=['T', 'MSFT', 'AAPL']) 
-    
+
+    # Default symbols set to the five dividend-paying stocks
+    symbols = st.sidebar.multiselect('Stock symbols', options=['KO', 'PG', 'JNJ', 'MCD', 'PEP'], default=['KO', 'PG', 'JNJ', 'MCD', 'PEP']) 
+
     # Add text input for additional stock symbols
     new_symbol = st.sidebar.text_input('Add a stock symbol', '')
 
