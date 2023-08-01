@@ -69,7 +69,7 @@ def perform_analysis(symbol, data, color):
 
     prices = data[symbol]['Close']
     fig = px.line(prices, line_shape="linear", color_discrete_sequence=[color])
-    fig.update_yaxes(title='Price (Dollars)')
+    fig.update_yaxes(title='Price ($)')
     st.plotly_chart(fig)
 
     divs = get_dividends(data[symbol])
