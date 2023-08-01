@@ -57,17 +57,19 @@ def setup_streamlit():
     # Add a 'Search Now' button
     search_button = st.sidebar.button('Search Now')
 
-    return symbols, new_symbol, search_button
+    # Add a dropdown to select period
+    period = st.sidebar.selectbox('Period', options=['1d', '5d', '1mo', '3mo', '6mo', '1y', '2y', '5y', '10y', 'ytd', 'max'], index=10)
 
+    return symbols, new_symbol, search_button, period
 
 def main():
-    symbols, new_symbol, search_button = setup_streamlit()
+    symbols, new_symbol, search_button, period = setup_streamlit()
 
     # If 'Search Now' is clicked, add the new symbol to the symbols list
     if search_button and new_symbol:
         symbols.append(new_symbol)
 
-    data = download_data(symbols)
+    data = download_data(symbols, period)
 
     st.header('Analysis')
     for symbol in symbols:
@@ -76,7 +78,6 @@ def main():
     st.header('Combined view')
     combined = pd.concat([data[symbol][f'{symbol}_Dividends'] for symbol in symbols], axis=1)
     st.write(combined)
-
 
 
 def perform_analysis(symbol, data):
