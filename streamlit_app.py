@@ -139,7 +139,9 @@ def calculate_dividend_metrics(divs, prices):
 
 def days_to_reach(high_prices, target):
     for i, prices in enumerate(high_prices):
-        if max(prices) >= target:
+        # Extract the price values from the list of tuples
+        prices = [price for _, price in prices]
+        if max(prices, default=0) >= target:
             return i+1
     return 0
 
