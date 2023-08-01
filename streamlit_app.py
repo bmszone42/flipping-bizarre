@@ -1,4 +1,4 @@
-import yfinance as yf
+import yfinance as yf 
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -16,27 +16,27 @@ def add_years(d, years):
 def get_year(d):
     return d.year
 
-@st.cache_data    
+@st.cache    
 def download_data(stocks, years):
     data = {}
     for stock in stocks:
         data[stock] = yf.Ticker(stock).history(period=f"{years}y")
     return data
     
-defDIV_columns(df):
+def div_columns(df):
     return [col for col in df.columns if col.startswith('Dividend')]
 
-# Main app
+# Main app 
 
 st.title('Dividend Analysis')
 
-years = st.slider('Number of years', 1, 10, 5)    
+years = st.slider('Number of years', 1, 10, 5)
 stocks = st.text_input('Enter stock symbols separated by space')
 
 if stocks:
-    stocks = stocks.split()  
+    stocks = stocks.split()   
     
-    data = download_data(stocks, years + 1) # Download data
+    data = download_data(stocks, years + 1)
     
     st.write('## Historical Prices')
     for stock in stocks:
@@ -44,9 +44,9 @@ if stocks:
         st.plotly_chart(fig, use_container_width=True)
         
     # Dividend data
-    dividends = {} 
+    dividends = {}
     for stock in stocks:
-        divs = data[stock].loc[:, DIV_columns(data[stock])]
+        divs = data[stock].loc[:, div_columns(data[stock])]
         divs.columns = [get_year(col) for col in divs.columns] 
         dividends[stock] = divs
     
@@ -55,7 +55,7 @@ if stocks:
         fig = px.bar(dividends[stock], x=dividends[stock].index, y=dividends[stock].columns)
         st.plotly_chart(fig, use_container_width=True)
         
-    # Aggregate dividends
+    # Aggregate dividends 
     agg_divs = pd.concat(dividends, axis=1)
     agg_divs.columns = stocks
     st.write(agg_divs)
