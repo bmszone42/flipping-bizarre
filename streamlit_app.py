@@ -116,7 +116,7 @@ def show_dividend_targets(divs, prices):
     st.write(pd.DataFrame(results, index=[f'{t*100}%' for t in targets]))
 
 def calculate_dividend_metrics(divs, prices):
-    # Convert prices to numeric data and handle non-numeric values as NaN
+    # Convert prices to numeric data and handle non-numeric or missing values as NaN
     prices = pd.to_numeric(prices, errors='coerce')
     prices.dropna(inplace=True)
     
@@ -126,14 +126,19 @@ def calculate_dividend_metrics(divs, prices):
     results = []
     for date, div in divs.itertuples():
         year = date.strftime("%Y")
-        target = prices[0] + div
+        target = prices.iloc[0] + div
         to_reach_50 = days_to_reach(high_prices, target * 0.5)
         to_reach_75 = days_to_reach(high_prices, target * 0.75) 
         to_reach_100 = days_to_reach(high_prices, target)
         results.append([year, to_reach_50, to_reach_75, to_reach_100])
     
-    averages = [sum(x)/len(x) for x in zip(*results)]
-    results.append(["Average"] + averages[1:])
+    # Filter out rows containing non-numeric values before calculating averages
+    numeric_results = [row for row in results if all(isinstance(value, (int, float)) for value in row[1:])]
+    
+    # Calculate averages only for rows with numeric data
+    if numeric_results:
+        averages = [sum(x)/len(x) for x in zip(*numeric_results)]
+        results.append(["Average"] + averages[1:])
     
     return quote_data, results
 
@@ -144,7 +149,6 @@ def days_to_reach(high_prices, target):
         if max(prices, default=0) >= target:
             return i+1
     return 0
-
 
 def get_dividend_for_date(div_data, date):
     for div_date, div in div_data:
