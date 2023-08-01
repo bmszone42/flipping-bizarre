@@ -97,6 +97,9 @@ def perform_analysis(symbol, data, color):
     if not divs.empty:
         plot_dividends(divs, color)
         show_dividend_targets(divs, prices)
+        quote_data, results = calculate_dividend_metrics(divs, prices)
+        st.write("Dividend Metrics:")
+        st.write(pd.DataFrame(results, columns=["Year", "To Reach 50%", "To Reach 75%", "To Reach 100%"]))
     else:
         st.write("No dividend data available for this stock.")
 
