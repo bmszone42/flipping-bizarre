@@ -141,6 +141,8 @@ def days_to_reach(high_prices, target):
     for prices in high_prices:
         prices = [price for _, price in prices]
         prices = np.array(prices)  # Convert prices to a numpy array
+        print("Prices:", prices)  # Debug print statement
+        print("Target:", target)  # Debug print statement
         days_to_reach_value = next((i+1 for i, price in enumerate(prices) if price >= target), 0)
         days_to_reach_values.append(days_to_reach_value)
     return days_to_reach_values
