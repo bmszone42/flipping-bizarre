@@ -6,10 +6,8 @@ import plotly.express as px
 from datetime import datetime
 
 # Fetching the historical data
-def download_data(symbols, years):
-    end = datetime.today()
-    start = end - pd.DateOffset(years=years)
-    return {symbol: yf.download(symbol, start=start, end=end) for symbol in symbols}
+def download_data(symbols):
+    return {symbol: yf.download(symbol, period='max') for symbol in symbols}
 
 # Extracting the dividend data
 def get_dividends(df):
