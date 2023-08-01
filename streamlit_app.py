@@ -5,34 +5,60 @@ import numpy as np
 from datetime import datetime
 import plotly.express as px
 
-st.title('Dividend Stock Analysis')
+# Helper functions
 
+def add_years(d, years):
+    try: 
+        return d.replace(year = d.year + years)
+    except ValueError:
+        return d + (datetime(d.year + years, 1, 1) - datetime(d.year, 1, 1))
+        
+def get_year(d):
+    return d.year
+
+@st.cache_data    
+def download_data(stocks, years):
+    data = {}
+    for stock in stocks:
+        data[stock] = yf.Ticker(stock).history(period=f"{years}y")
+    return data
+    
+defDIV_columns(df):
+    return [col for col in df.columns if col.startswith('Dividend')]
+
+# Main app
+
+st.title('Dividend Analysis')
+
+years = st.slider('Number of years', 1, 10, 5)    
 stocks = st.text_input('Enter stock symbols separated by space')
 
 if stocks:
-    stocks = stocks.split()
+    stocks = stocks.split()  
     
-    data = {}
-    for stock in stocks:
-        data[stock] = yf.Ticker(stock).history(period="max")
-        
-    st.write('## Historical Price Data')
+    data = download_data(stocks, years + 1) # Download data
+    
+    st.write('## Historical Prices')
     for stock in stocks:
         fig = px.line(data[stock]['Close'])
         st.plotly_chart(fig, use_container_width=True)
         
-    st.write('## Dividend Data')
-    div_data = {}
+    # Dividend data
+    dividends = {} 
     for stock in stocks:
-        div = data[stock].iloc[::-1][data[stock]['Dividends'] > 0]
-        div.set_index('Date', inplace=True)
-        div_data[stock] = div['Dividends']
-        
-        fig = px.bar(div, x=div.index, y='Dividends')
+        divs = data[stock].loc[:, DIV_columns(data[stock])]
+        divs.columns = [get_year(col) for col in divs.columns] 
+        dividends[stock] = divs
+    
+    st.write('## Dividends')        
+    for stock in stocks:
+        fig = px.bar(dividends[stock], x=dividends[stock].index, y=dividends[stock].columns)
         st.plotly_chart(fig, use_container_width=True)
         
-    agg_div = pd.DataFrame({stock: div_data[stock] for stock in stocks})  
-    st.write(agg_div.reindex(sorted(agg_div.columns), axis=1))
-    
+    # Aggregate dividends
+    agg_divs = pd.concat(dividends, axis=1)
+    agg_divs.columns = stocks
+    st.write(agg_divs)
+        
 else:
-    st.write('Enter stock symbols above')
+    st.write('Enter symbols above')
