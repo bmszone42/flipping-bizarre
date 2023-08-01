@@ -38,7 +38,7 @@ def setup_streamlit():
 
 
 def main():
-    _, symbols, new_symbol, search_button = setup_streamlit()
+    symbols, new_symbol, search_button = setup_streamlit()
 
     # If 'Search Now' is clicked, add the new symbol to the symbols list
     if search_button and new_symbol:
