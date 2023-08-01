@@ -19,7 +19,7 @@ def analyze(dividends, prices, years):
     for year in range(years):
 
         # Filter dividends 
-        divs = dividends[dividends.index.year==2021-year]
+        divs = dividends[dividends.index.year==2021-year].reset_index()
 
         data = []
         for _, div in divs.iterrows():
