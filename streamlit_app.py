@@ -117,9 +117,8 @@ def show_dividend_targets(divs, prices):
 
 # Calculate metrics
 def calculate_dividend_metrics(divs, prices):
-
-  clean_prices = prices.dropna().values  
-  high_prices = [clean_prices[max(i-365, 0):i] for i in range(1, len(clean_prices))]
+    clean_prices = prices.dropna().values  
+    high_prices = [clean_prices[max(i-365, 0):i] for i in range(1, len(clean_prices))]
 
     results = []
     for date, div in divs.iterrows():
@@ -130,13 +129,14 @@ def calculate_dividend_metrics(divs, prices):
         to_reach_100 = days_to_reach(high_prices, target)
         results.append([year, to_reach_50, to_reach_75, to_reach_100])
 
-  numeric_results = [row for row in results if all(isinstance(value, (int, float)) for value in row[1:])]
+    numeric_results = [row for row in results if all(isinstance(value, (int, float)) for value in row[1:])]
 
-  if numeric_results:
-    averages = [sum(x)/len(x) for x in zip(*numeric_results)]
-    results.append(["Average"] + averages[1:])
-  
-  return results
+    if numeric_results:
+        averages = [sum(x)/len(x) for x in zip(*numeric_results)]
+        results.append(["Average"] + averages[1:])
+    
+    return results
+
 
 def days_to_reach(high_prices, target):
     for i, prices in enumerate(high_prices):
