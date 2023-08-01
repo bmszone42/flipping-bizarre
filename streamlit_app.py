@@ -1,38 +1,66 @@
-from collections import namedtuple
-import altair as alt
-import math
-import pandas as pd
 import streamlit as st
+import pandas as pd
+import yfinance as yf
+from datetime import datetime, timedelta
 
-"""
-# Welcome to Streamlit!
+st.title('Dividend Investing Analysis')
 
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:
+# Function to get dividend and historical data 
+@st.cache
+def get_data(ticker):
+    dividends = yf.Ticker(ticker).dividends
+    hist = yf.Ticker(ticker).history(period="max")
+    return dividends, hist
 
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
+# Function to analyze data
+def analyze(dividends, hist, num_years):
+    
+    results = []
+    
+    for year in range(num_years):
+        y = datetime.today().year - year
+        
+        # Filter to dividends paid in given year
+        divs = dividends[dividends.index.year==y]
+        
+        # Get historical prices around dividend dates
+        analysis = []
+        for i, row in divs.iterrows():
+            s = row.name - timedelta(days=10)
+            e = row.name + timedelta(days=90)
+            prices = hist.loc[s:e]['Close']
+            
+            # Calculate days to recovery
+            amt = row['Dividends']
+            targets = [prices.iloc[0] + 0.5*amt, prices.iloc[0] + 0.75*amt, prices.iloc[0] + amt]
+            days = [0,0,0]
+            for p in prices:
+                if p >= targets[0] and days[0]==0: days[0] = 1
+                if p >= targets[1] and days[1]==0: days[1] = 1 
+                if p >= targets[2] and days[2]==0: days[2] = 1
+            analysis.append(days)
+        
+        # Average the days        
+        avg = [sum(x)/len(x) for x in zip(*analysis)]
+        results.append(avg)
+        
+    return results
+            
+# Streamlit app
+st.header('Parameters')
+ticker = st.text_input('Enter a ticker', value='T')  
+years = st.slider('Number of years', 1, 10, 5)
 
-In the meantime, below is an example of what you can do with just a few lines of code:
-"""
+if st.button('Analyze'):
 
+    with st.spinner('Fetching data...'):
+        dividends, hist = get_data(ticker)
 
-with st.echo(code_location='below'):
-    total_points = st.slider("Number of points in spiral", 1, 5000, 2000)
-    num_turns = st.slider("Number of turns in spiral", 1, 100, 9)
+    results = analyze(dividends, hist, years)
 
-    Point = namedtuple('Point', 'x y')
-    data = []
-
-    points_per_turn = total_points / num_turns
-
-    for curr_point_num in range(total_points):
-        curr_turn, i = divmod(curr_point_num, points_per_turn)
-        angle = (curr_turn + 1) * 2 * math.pi * i / points_per_turn
-        radius = curr_point_num / total_points
-        x = radius * math.cos(angle)
-        y = radius * math.sin(angle)
-        data.append(Point(x, y))
-
-    st.altair_chart(alt.Chart(pd.DataFrame(data), height=500, width=500)
-        .mark_circle(color='#0068c9', opacity=0.5)
-        .encode(x='x:Q', y='y:Q'))
+    st.header('Results')
+    for i, result in enumerate(results):
+        st.write(f'Year {datetime.today().year-i}') 
+        st.write(f'Days to recover 50%: {result[0]:.2f}')
+        st.write(f'Days to recover 75%: {result[1]:.2f}')
+        st.write(f'Days to recover 100%: {result[2]:.2f}')
