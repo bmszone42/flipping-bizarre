@@ -115,7 +115,6 @@ def show_dividend_targets(divs, prices):
     results = get_days_to_target(divs, prices, targets)
     st.write(pd.DataFrame(results, index=[f'{t*100}%' for t in targets]))
 
-# Calculate metrics
 def calculate_dividend_metrics(divs, prices):
     clean_prices = prices.dropna().values  
     high_prices = [clean_prices[max(i-365, 0):i] for i in range(1, len(clean_prices))]
@@ -140,7 +139,7 @@ def calculate_dividend_metrics(divs, prices):
 def days_to_reach(high_prices, target):
     days_to_reach_values = []
     for prices in high_prices:
-        prices = [price for _, price in prices]
+        prices = [price for price in prices]
         days_to_reach_value = next((i+1 for i, price in enumerate(prices) if price >= target), 0)
         days_to_reach_values.append(days_to_reach_value)
     return days_to_reach_values
