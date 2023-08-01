@@ -173,6 +173,8 @@ def main():
         symbols.append(new_symbol)
 
     data = download_data(symbols, period)
+    st.header('Data view')
+    st.write(data)
 
     st.header('Analysis')
     for symbol in symbols:
