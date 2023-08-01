@@ -6,6 +6,7 @@ import plotly.express as px
 from datetime import datetime
 
 # Fetching the historical data
+@st.cache_data
 def download_data(symbols):
     data = {}
     for symbol in symbols:
