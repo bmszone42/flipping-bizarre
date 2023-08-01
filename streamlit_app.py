@@ -88,7 +88,7 @@ def perform_analysis(symbol, data, color):
     st.subheader(symbol)
 
     prices = data[symbol]['Close']
-    fig = px.line(prices, line_shape="linear", line_color=color)
+    fig = px.line(prices, line_shape="linear", color_discrete_sequence=[color])
     fig.update_yaxes(title='Price (Dollars)')
     st.plotly_chart(fig)
 
@@ -98,7 +98,6 @@ def perform_analysis(symbol, data, color):
         show_dividend_targets(divs, prices)
     else:
         st.write("No dividend data available for this stock.")
-
 
 def plot_dividends(divs):
     fig = px.bar(divs, x=divs.index, y=divs.columns)
