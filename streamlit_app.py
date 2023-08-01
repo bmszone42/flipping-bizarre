@@ -104,6 +104,7 @@ def plot_dividends(divs, color):
     fig = go.Figure()
     for column in divs.columns:
         fig.add_trace(go.Bar(x=divs.index, y=divs[column], name=column, marker_color=color))
+    fig.update_layout(yaxis_title="Price in Dollars")
     st.plotly_chart(fig)
 
 def show_dividend_targets(divs, prices):
