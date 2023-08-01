@@ -7,7 +7,16 @@ from datetime import datetime
 
 # Fetching the historical data
 def download_data(symbols):
-    return {symbol: yf.download(symbol, period='max') for symbol in symbols}
+    data = {}
+    for symbol in symbols:
+        ticker = yf.Ticker(symbol)
+        
+        # get stock price data
+        data[symbol] = ticker.history(period='max')
+        
+        # get dividends
+        data[symbol]['Dividends'] = ticker.dividends
+    return data
 
 # Extracting the dividend data
 def get_dividends(df):
