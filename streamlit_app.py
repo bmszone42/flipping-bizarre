@@ -139,11 +139,11 @@ def calculate_dividend_metrics(divs, prices):
 def days_to_reach(high_prices, target):
     days_to_reach_values = []
     for prices in high_prices:
-        prices = [price for price in prices]
+        prices = [price for _, price in prices]
+        prices = np.array(prices)  # Convert prices to a numpy array
         days_to_reach_value = next((i+1 for i, price in enumerate(prices) if price >= target), 0)
         days_to_reach_values.append(days_to_reach_value)
     return days_to_reach_values
-
 
 def get_dividend_for_date(div_data, date):
     for div_date, div in div_data:
