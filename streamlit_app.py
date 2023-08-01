@@ -11,21 +11,20 @@ def download_data(symbols, period='max'):
     data = {}
     for symbol in symbols:
         try:
+            # Check if the symbol is valid
+            if not yf.Ticker(symbol).info:
+                st.error(f"Invalid symbol: {symbol}. Please check if the symbol is correct.")
+                continue
+            
             ticker = yf.Ticker(symbol)
-            
-            # get stock price data
             history = ticker.history(period=period)
-            
-            # get dividends and rename the series name
             dividends = ticker.dividends.rename(f'{symbol}_Dividends')
-
-            # combine history and dividend data
             df = pd.concat([history, dividends], axis=1)
-            
             data[symbol] = df
         except:
             st.error(f"Failed to download data for symbol: {symbol}. Please check if the symbol is correct.")
     return data
+
 
 # Extracting the dividend data
 def get_dividends(df):
