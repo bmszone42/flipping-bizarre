@@ -63,22 +63,17 @@ def setup_streamlit():
     search_button = st.sidebar.button('Search Now')
 
     return period, symbols, new_symbol, search_button, color
-
-
     
 def perform_analysis(symbol, data, color):
     st.subheader(symbol)
 
-    prices = data[symbol]['Close'].astype(float) 
+    prices = data[symbol]['Close']
     fig = px.line(prices, line_shape="linear", color_discrete_sequence=[color])
-    fig.update_yaxes(title='Price ($)')
-    
-    divs = get_dividends(data[symbol]).astype(float)
+    fig.update_yaxes(title='Price (Dollars)')
+    st.plotly_chart(fig)
+
+    divs = get_dividends(data[symbol])
     if not divs.empty:
-        div_dates = divs.index
-        # Add stars to the price graph for dividend payment dates
-        fig.add_trace(go.Scatter(x=div_dates, y=prices[div_dates], mode='markers', marker=dict(symbol='star', size=12, color=color, line=dict(width=2, color='DarkSlateGrey'))))
-        
         plot_dividends(divs, color)
         show_dividend_targets(divs, prices)
         quote_data, results = calculate_dividend_metrics(divs, prices)
@@ -86,7 +81,7 @@ def perform_analysis(symbol, data, color):
         st.write(pd.DataFrame(results, columns=["Year", "To Reach 50%", "To Reach 75%", "To Reach 100%"]))
     else:
         st.write("No dividend data available for this stock.")
-    st.plotly_chart(fig)
+
     
 def plot_dividends(divs, color):
     fig = go.Figure()
