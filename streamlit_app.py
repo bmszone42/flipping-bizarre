@@ -111,14 +111,12 @@ def perform_analysis(symbol, data, color):
     else:
         st.write("No dividend data available for this stock.")
     
-def plot_dividends(divs, color):
+def plot_dividends(divs, color, title=None):
     fig = go.Figure()
     for column in divs.columns:
         fig.add_trace(go.Bar(x=divs.index, y=divs[column], name=column, marker_color=color))
-    fig.update_layout(yaxis_title="Price ($)")
+    fig.update_layout(yaxis_title="Price ($)", title=title)  # Set the title for the dividends chart
     st.plotly_chart(fig)
-
-
 
 def show_dividend_targets(divs, prices):
     targets = [0.5, 0.75, 1.0]
