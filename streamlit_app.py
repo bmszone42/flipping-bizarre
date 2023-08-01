@@ -12,11 +12,19 @@ def download_data(symbols):
         ticker = yf.Ticker(symbol)
         
         # get stock price data
-        data[symbol] = ticker.history(period='max')
+        history = ticker.history(period='max')
         
-        # get dividends
-        data[symbol]['Dividends'] = ticker.dividends
+        # get dividends, align with history data, and rename column
+        dividends = ticker.dividends
+        aligned_dividends = pd.DataFrame(index=history.index)
+        aligned_dividends[f'{symbol}_Dividends'] = dividends
+        
+        # combine history and dividend data
+        df = pd.concat([history, aligned_dividends], axis=1)
+        
+        data[symbol] = df
     return data
+
 
 # Extracting the dividend data
 def get_dividends(df):
@@ -67,6 +75,7 @@ def main():
     st.header('Combined view')
     combined = pd.concat([data[symbol][f'{symbol}_Dividends'] for symbol in symbols], axis=1)
     st.write(combined)
+
 
 
 def perform_analysis(symbol, data):
