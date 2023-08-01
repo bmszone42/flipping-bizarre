@@ -116,6 +116,10 @@ def show_dividend_targets(divs, prices):
     st.write(pd.DataFrame(results, index=[f'{t*100}%' for t in targets]))
 
 def calculate_dividend_metrics(divs, prices):
+    # Convert prices to numeric data to ensure it contains only numeric values
+    prices = pd.to_numeric(prices, errors='coerce')
+    prices.dropna(inplace=True)
+    
     quote_data = list(zip(prices.index.strftime("%Y-%m-%d"), prices.values.tolist()))
     high_prices = [quote_data[max(i-365, 0):i] for i in range(1, len(quote_data))]
     
