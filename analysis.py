@@ -4,7 +4,7 @@ import yfinance as yf
 from datetime import datetime, timedelta
 import pandas as pd
 
-@st.cache
+@st.cache_data
 def get_data(ticker):
 
     dividends = yf.Ticker(ticker).dividends
