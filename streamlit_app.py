@@ -16,7 +16,7 @@ def add_years(d, years):
 def get_year(d):
     return d.year
 
-@st.cache    
+@st.cache_data    
 def download_data(stocks, years):
     data = {}
     for stock in stocks:
