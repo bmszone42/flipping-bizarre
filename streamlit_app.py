@@ -13,8 +13,11 @@ def add_years(d, years):
     except ValueError:
         return d + (datetime(d.year + years, 1, 1) - datetime(d.year, 1, 1))
         
-def get_year(d):
-    return d.year
+def get_year(col):
+    try:
+        return pd.to_datetime(col).year
+    except ValueError:
+        return col
 
 @st.cache_data    
 def download_data(stocks, years):
