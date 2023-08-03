@@ -92,14 +92,14 @@ def perform_analysis(symbol, data, color):
 
     divs = get_dividends(data[symbol])
     if not divs.empty:
-        div_dates = divs.index.drop_duplicates()  # Keep only unique dividend payment dates
+        div_dates = divs[divs['Dividends'] > 0].index.drop_duplicates()  # Keep only unique dividend payment dates with dividends greater than 0
 
-        # Add stars to the price graph for dividend payment dates
-        fig.add_trace(go.Scatter(x=div_dates, y=prices.loc[div_dates, 'Close'], mode='markers', marker=dict(symbol='star', size=12, color=color, line=dict(width=2, color='DarkSlateGrey')), name=symbol))
+        if not div_dates.empty:
+            # Add stars to the price graph for dividend payment dates with dividends greater than 0
+            fig.add_trace(go.Scatter(x=div_dates, y=prices.loc[div_dates, 'Close'], mode='markers', marker=dict(symbol='star', size=12, color=color, line=dict(width=2, color='DarkSlateGrey')), name=symbol))
 
         st.plotly_chart(fig)
 
-        
         # Display the DataFrame with the dividend dates
         st.write("Dividend Dates:")
         st.write(divs)
@@ -115,6 +115,7 @@ def perform_analysis(symbol, data, color):
         st.write(pd.DataFrame(results, columns=["Year", "To Reach 50%", "To Reach 75%", "To Reach 100%"]))
     else:
         st.write("No dividend data available for this stock.")
+
 
     
 def plot_dividends(divs, color, title=None):
