@@ -126,12 +126,12 @@ def perform_analysis(symbol, data, color, new_df):
             # Add stars to the price graph for dividend payment dates with dividends greater than 0
             fig.add_trace(go.Scatter(x=div_dates, y=prices.loc[div_dates, 'Close'], mode='markers', marker=dict(symbol='star', size=12, color=color, line=dict(width=2, color='DarkSlateGrey')), name=symbol + ' dividend'))
 
-        quote_data, results = calculate_dividend_metrics(divs, prices)
-        st.write("Dividend Targets:") 
-        st.write(results)
-    
-      else:
-        st.write("No dividend data")
+            quote_data, results = calculate_dividend_metrics(divs, prices)
+            st.write("Dividend Targets:") 
+            st.write(results)
+        
+  else:
+    st.write("No dividend data")
       
         st.plotly_chart(fig)
 
