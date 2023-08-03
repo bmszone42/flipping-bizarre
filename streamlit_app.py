@@ -107,25 +107,18 @@ def perform_analysis(symbol, data, color, new_df):
         # Display the DataFrame with the dividend dates and closing price on those dates
         div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
 
-        # Loop through each dividend date and add rows from new_df for that date
-        new_rows = []
-        for date in div_dates_with_prices.index:
-            symbol_df = new_df[new_df['symbol'] == symbol]
-            symbol_row = symbol_df.copy()
-            symbol_row['date'] = date
-            new_rows.append(symbol_row)
-
-        if new_rows:
-            new_rows_df = pd.concat(new_rows)
-            div_dates_with_prices = pd.concat([div_dates_with_prices, new_rows_df], axis=0)
-
+        
         # Merge 'new_df' DataFrame with 'div_dates_with_prices' based on the date index
         div_dates_with_prices = pd.merge(div_dates_with_prices, new_df, on='date', how='left')
+
+         # Align the 'new_df' DataFrame with 'div_dates_with_prices' based on the 'date' index
+        new_df = new_df.set_index('date')
+        div_dates_with_prices = pd.merge(div_dates_with_prices, new_df, left_index=True, right_index=True, how='left')
+
 
         st.write("Dividend Dates with Closing Prices, Price Targets, and Analyst Targets:")
         st.write(div_dates_with_prices)
 
-           
         # Add a title to the div/date chart
         div_chart_title = f'Dividends Over Time for {symbol}'
         plot_dividends(divs, color, title=div_chart_title)
