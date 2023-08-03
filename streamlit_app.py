@@ -30,8 +30,8 @@ def download_data(symbols, period='max'):
             dividends = ticker.dividends.rename(f'{symbol}_Dividends')
             df = pd.concat([history, dividends], axis=1)
             data[symbol] = df
-            st.write('Dataframe is below')
-            st.write(df(head))
+
+        
             
         except:
             st.error(f"Failed to download data for symbol: {symbol}. Please check if the symbol is correct.")
@@ -201,7 +201,7 @@ def main():
     # Displaying the first 5 rows for each stock in the DataFrame
     for symbol, df in data.items():
         st.subheader(symbol)
-        st.write(df.head())
+        st.write(df)
 
     st.header('Analysis')
     for symbol in symbols:
