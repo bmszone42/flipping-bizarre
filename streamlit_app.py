@@ -6,6 +6,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
 
+TARGETS = [0.5, 0.75, 1.0] 
+
 # Fetching the historical data
 @st.cache_data
 def download_data(symbols, period='max'):
@@ -38,7 +40,29 @@ def get_dividends(df):
     else:
         return pd.DataFrame()
 
+# Modified dividend metrics function
+def calculate_dividend_metrics(divs, prices):
 
+  clean_prices = prices.dropna().values
+  high_prices = [clean_prices[max(i-365, 0):i] for i in range(1, len(clean_prices))]
+
+  results = []
+  for date, div in divs.iterrows():
+    target_prices = [div * (1 + target) for target in TARGETS]
+    days_to_targets = [days_to_reach(hp, tp) for hp, tp in zip(high_prices, target_prices)]
+    averages = [mean(col) for col in zip(*days_to_targets)]
+
+    result = [date.year, *averages]
+    results.append(result)
+  
+  return results
+
+# Simplified show targets  
+def show_dividend_targets(divs, prices):
+  results = calculate_dividend_metrics(divs, prices)
+  targets = [f"{target*100}%" for target in TARGETS]
+  df = pd.DataFrame(results, columns=["Year", *targets])
+  st.write(df)
 # def get_days_to_target(divs, prices, targets):
 #     if divs.empty:
 #         return {f'{target*100}%': None for target in targets}
