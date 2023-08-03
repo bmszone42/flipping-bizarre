@@ -107,17 +107,19 @@ def perform_analysis(symbol, data, color):
          # Display the DataFrame with the dividend dates and closing price on those dates
         div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
 
-        # Calculate 1-year price target on the day the dividend was paid (assuming 1-year is 365 days)
-        div_dates_with_prices['1-Year Price Target'] = div_dates_with_prices['Close'] * (1 + 365 * div_dates_with_prices['Dividends'])
-
-        st.write("Dividend Dates with Closing Prices and 1-Year Price Target:")
+        # Loop through each dividend date and add rows from new_df for that date
+        for date in div_dates_with_prices.index:
+            symbol_row = new_df[new_df['symbol'] == symbol]
+            symbol_row['date'] = date
+            div_dates_with_prices = pd.concat([div_dates_with_prices, symbol_row], axis=0)
+    
+        st.write("Dividend Dates with Closing Prices, Price Targets, and Analyst Targets:")
         st.write(div_dates_with_prices)
-        
+           
         # Add a title to the div/date chart
         div_chart_title = f'Dividends Over Time for {symbol}'
         plot_dividends(divs, color, title=div_chart_title)
 
-        #plot_dividends(divs, color)
         show_dividend_targets(divs, prices)
         quote_data, results = calculate_dividend_metrics(divs, prices)
         st.write("Dividend Metrics:")
