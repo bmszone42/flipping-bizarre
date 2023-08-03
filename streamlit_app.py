@@ -39,28 +39,28 @@ def get_dividends(df):
         return pd.DataFrame()
 
 
-def get_days_to_target(divs, prices, targets):
-    if divs.empty:
-        return {f'{target*100}%': None for target in targets}
-    else:
-        div_prices = pd.merge(prices, divs, left_index=True, right_index=True, how='inner')
+# def get_days_to_target(divs, prices, targets):
+#     if divs.empty:
+#         return {f'{target*100}%': None for target in targets}
+#     else:
+#         div_prices = pd.merge(prices, divs, left_index=True, right_index=True, how='inner')
 
-        results = {}
-        for target in targets:
-            target_price = div_prices['Close'] * (1 + target * div_prices['Dividends'])
-            days_to_reach_value = min((i+1 for i, price in enumerate(target_price) if price > div_prices['Close'][0]), default=None)
-            results[f'{target*100}%'] = days_to_reach_value
+#         results = {}
+#         for target in targets:
+#             target_price = div_prices['Close'] * (1 + target * div_prices['Dividends'])
+#             days_to_reach_value = min((i+1 for i, price in enumerate(target_price) if price > div_prices['Close'][0]), default=None)
+#             results[f'{target*100}%'] = days_to_reach_value
 
-            # Additional code to visualize how the days are calculated
-            fig = go.Figure()
-            fig.add_trace(go.Scatter(x=div_prices.index, y=div_prices['Close'], mode='lines', name='Price'))
-            fig.add_trace(go.Scatter(x=div_prices.index, y=target_price, mode='lines', name=f'{target*100}% Target Price', line=dict(dash='dash')))
-            fig.add_trace(go.Scatter(x=[div_prices.index[days_to_reach_value]], y=[target_price[days_to_reach_value]], mode='markers', name=f'{target*100}% Target Achieved', marker=dict(size=10)))
+#             # Additional code to visualize how the days are calculated
+#             fig = go.Figure()
+#             fig.add_trace(go.Scatter(x=div_prices.index, y=div_prices['Close'], mode='lines', name='Price'))
+#             fig.add_trace(go.Scatter(x=div_prices.index, y=target_price, mode='lines', name=f'{target*100}% Target Price', line=dict(dash='dash')))
+#             fig.add_trace(go.Scatter(x=[div_prices.index[days_to_reach_value]], y=[target_price[days_to_reach_value]], mode='markers', name=f'{target*100}% Target Achieved', marker=dict(size=10)))
 
-            fig.update_layout(title=f'Days to Reach {target*100}% Dividend Target', xaxis_title='Date', yaxis_title='Price ($)')
-            st.plotly_chart(fig)
+#             fig.update_layout(title=f'Days to Reach {target*100}% Dividend Target', xaxis_title='Date', yaxis_title='Price ($)')
+#             st.plotly_chart(fig)
 
-        return results
+#         return results
 
 
 def setup_streamlit():
@@ -102,6 +102,13 @@ def perform_analysis(symbol, data, color, new_df):
             # Add stars to the price graph for dividend payment dates with dividends greater than 0
             fig.add_trace(go.Scatter(x=div_dates, y=prices.loc[div_dates, 'Close'], mode='markers', marker=dict(symbol='star', size=12, color=color, line=dict(width=2, color='DarkSlateGrey')), name=symbol + ' dividend'))
 
+        quote_data, results = calculate_dividend_metrics(divs, prices)
+        st.write("Dividend Targets:") 
+        st.write(results)
+    
+      else:
+        st.write("No dividend data")
+      
         st.plotly_chart(fig)
 
         # Display the DataFrame with the dividend dates and closing price on those dates
@@ -134,42 +141,42 @@ def plot_dividends(divs, color, title=None):
     fig.update_layout(yaxis_title="Price ($)", title=title)  # Set the title for the dividends chart
     st.plotly_chart(fig)
 
-def show_dividend_targets(divs, prices):
-    targets = [0.5, 0.75, 1.0]
-    results = get_days_to_target(divs, prices, targets)
-    st.write(pd.DataFrame(results, index=[f'{t*100}%' for t in targets]))
+# def show_dividend_targets(divs, prices):
+#     targets = [0.5, 0.75, 1.0]
+#     results = get_days_to_target(divs, prices, targets)
+#     st.write(pd.DataFrame(results, index=[f'{t*100}%' for t in targets]))
 
-def calculate_dividend_metrics(divs, prices):
-    clean_prices = prices.dropna().values  
-    high_prices = [clean_prices[max(i-365, 0):i] for i in range(1, len(clean_prices))]
+# def calculate_dividend_metrics(divs, prices):
+#     clean_prices = prices.dropna().values  
+#     high_prices = [clean_prices[max(i-365, 0):i] for i in range(1, len(clean_prices))]
 
-    results = []
-    for date, div in divs.iterrows():
-        year = date.year
-        target = clean_prices[0] + div
-        to_reach_50 = days_to_reach(high_prices, target * 0.5)
-        to_reach_75 = days_to_reach(high_prices, target * 0.75)
-        to_reach_100 = days_to_reach(high_prices, target)
-        results.append([year, to_reach_50, to_reach_75, to_reach_100])
+#     results = []
+#     for date, div in divs.iterrows():
+#         year = date.year
+#         target = clean_prices[0] + div
+#         to_reach_50 = days_to_reach(high_prices, target * 0.5)
+#         to_reach_75 = days_to_reach(high_prices, target * 0.75)
+#         to_reach_100 = days_to_reach(high_prices, target)
+#         results.append([year, to_reach_50, to_reach_75, to_reach_100])
 
-    numeric_results = [row for row in results if all(isinstance(value, (int, float)) for value in row[1:])]
+#     numeric_results = [row for row in results if all(isinstance(value, (int, float)) for value in row[1:])]
 
-    if numeric_results:
-        averages = [sum(x)/len(x) for x in zip(*numeric_results)]
-        results.append(["Average"] + averages[1:])
+#     if numeric_results:
+#         averages = [sum(x)/len(x) for x in zip(*numeric_results)]
+#         results.append(["Average"] + averages[1:])
     
-    return results
+#     return results
 
-def days_to_reach(high_prices, target):
-    days_to_reach_values = []
-    for prices in high_prices:
-        prices = [price for _, price in prices]
-        prices = np.array(prices)  # Convert prices to a numpy array
-        st.write("Prices:", prices)  # Debug print statement
-        st.write("Target:", target)  # Debug print statement
-        days_to_reach_value = next((i+1 for i, price in enumerate(prices) if price >= target), 0)
-        days_to_reach_values.append(days_to_reach_value)
-    return days_to_reach_values
+# def days_to_reach(high_prices, target):
+#     days_to_reach_values = []
+#     for prices in high_prices:
+#         prices = [price for _, price in prices]
+#         prices = np.array(prices)  # Convert prices to a numpy array
+#         st.write("Prices:", prices)  # Debug print statement
+#         st.write("Target:", target)  # Debug print statement
+#         days_to_reach_value = next((i+1 for i, price in enumerate(prices) if price >= target), 0)
+#         days_to_reach_values.append(days_to_reach_value)
+#     return days_to_reach_values
 
 def get_dividend_for_date(div_data, date):
     for div_date, div in div_data:
