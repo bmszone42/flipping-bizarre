@@ -124,8 +124,6 @@ def perform_analysis(symbol, data, color):
         st.write(pd.DataFrame(results, columns=["Year", "To Reach 50%", "To Reach 75%", "To Reach 100%"]))
     else:
         st.write("No dividend data available for this stock.")
-
-
     
 def plot_dividends(divs, color, title=None):
     fig = go.Figure()
