@@ -44,7 +44,7 @@ def download_data(symbols, period='max'):
             new_df = new_df.append(new_row, ignore_index=True)
 
             st.write('New DATA')
-            st.write(new_df(head))
+            st.write(new_df.head())
         
       
         except:
