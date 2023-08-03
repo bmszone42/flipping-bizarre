@@ -18,6 +18,7 @@ def download_data(symbols, period='max'):
                 continue
             
             ticker = yf.Ticker(symbol)
+            stock_info = ticker.info
             history = ticker.history(period=period)
             dividends = ticker.dividends.rename(f'{symbol}_Dividends')
             df = pd.concat([history, dividends], axis=1)
