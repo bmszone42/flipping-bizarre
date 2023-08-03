@@ -104,22 +104,27 @@ def perform_analysis(symbol, data, color, new_df):
 
         st.plotly_chart(fig)
 
-         # Display the DataFrame with the dividend dates and closing price on those dates
+        # Display the DataFrame with the dividend dates and closing price on those dates
         div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
 
         # Loop through each dividend date and add rows from new_df for that date
+        new_rows = []
         for date in div_dates_with_prices.index:
-            symbol_row = new_df[new_df['symbol'] == symbol]
+            symbol_df = new_df[new_df['symbol'] == symbol]
+            symbol_row = symbol_df.copy()
             symbol_row['date'] = date
-            div_dates_with_prices = pd.concat([div_dates_with_prices, symbol_row], axis=0)
+            new_rows.append(symbol_row)
+
+        if new_rows:
+            new_rows_df = pd.concat(new_rows)
+            div_dates_with_prices = pd.concat([div_dates_with_prices, new_rows_df], axis=0)
 
         # Merge 'new_df' DataFrame with 'div_dates_with_prices' based on the date index
-        new_df['date'] = div_dates_with_prices.index  # Add a 'date' column to 'new_df' using the index from 'div_dates_with_prices'
         div_dates_with_prices = pd.merge(div_dates_with_prices, new_df, on='date', how='left')
 
-    
         st.write("Dividend Dates with Closing Prices, Price Targets, and Analyst Targets:")
         st.write(div_dates_with_prices)
+
            
         # Add a title to the div/date chart
         div_chart_title = f'Dividends Over Time for {symbol}'
