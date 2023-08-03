@@ -108,10 +108,10 @@ def perform_analysis(symbol, data, color, new_df):
         div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
 
         # Loop through each dividend date and add rows from new_df for that date
-        # for date in div_dates_with_prices.index:
-        #     symbol_row = new_df[new_df['symbol'] == symbol]
-        #     symbol_row['date'] = date
-        #     div_dates_with_prices = pd.concat([div_dates_with_prices, symbol_row], axis=0)
+        for date in div_dates_with_prices.index:
+            symbol_row = new_df[new_df['symbol'] == symbol]
+            symbol_row['date'] = date
+            div_dates_with_prices = pd.concat([div_dates_with_prices, symbol_row], axis=0)
 
         # Merge 'new_df' DataFrame with 'div_dates_with_prices' based on the date index
         new_df['date'] = div_dates_with_prices.index  # Add a 'date' column to 'new_df' using the index from 'div_dates_with_prices'
