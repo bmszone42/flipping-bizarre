@@ -130,8 +130,8 @@ def perform_analysis(symbol, data, color, new_df):
             st.write("Dividend Targets:") 
             st.write(results)
         
-  else:
-    st.write("No dividend data")
+    else:
+        st.write("No dividend data")
       
         st.plotly_chart(fig)
 
