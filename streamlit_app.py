@@ -100,10 +100,15 @@ def perform_analysis(symbol, data, color):
 
         st.plotly_chart(fig)
 
-        # Display the DataFrame with the dividend dates and closing price on those dates
-        st.write("Dividend Dates:")
-        st.write(divs[divs['Dividends'] > 0].join(prices, how='inner'))
+         # Display the DataFrame with the dividend dates and closing price on those dates
+        div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
 
+        # Calculate 1-year price target on the day the dividend was paid (assuming 1-year is 365 days)
+        div_dates_with_prices['1-Year Price Target'] = div_dates_with_prices['Close'] * (1 + 365 * div_dates_with_prices['Dividends'])
+
+        st.write("Dividend Dates with Closing Prices and 1-Year Price Target:")
+        st.write(div_dates_with_prices)
+        
         # Add a title to the div/date chart
         div_chart_title = f'Dividends Over Time for {symbol}'
         plot_dividends(divs, color, title=div_chart_title)
