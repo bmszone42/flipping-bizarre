@@ -196,8 +196,8 @@ def main():
         st.subheader(symbol)
         st.write(df)
 
-    # Create a new DataFrame 'new_df' with specified columns from ticker.info
-    new_df = pd.DataFrame()
+     # Create a new DataFrame 'new_df' with specified columns from ticker.info
+    new_df_data = []
     for symbol in symbols:
         ticker = yf.Ticker(symbol)
         stock_info = ticker.info
@@ -214,7 +214,10 @@ def main():
             "targetMeanPrice": stock_info.get("targetMeanPrice"),
             "targetMedianPrice": stock_info.get("targetMedianPrice"),
         }
-        new_df = new_df.append(new_row, ignore_index=True)
+        new_df_data.append(new_row)
+
+    new_df = pd.DataFrame(new_df_data)
+
     # Display the new DataFrame 'new_df'
     st.header('New DataFrame - ticker.info Data')
     st.write(new_df.head())
