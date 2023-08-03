@@ -100,9 +100,9 @@ def perform_analysis(symbol, data, color):
 
         st.plotly_chart(fig)
 
-        # Display the DataFrame with the dividend dates
+        # Display the DataFrame with the dividend dates and closing price on those dates
         st.write("Dividend Dates:")
-        st.write(divs)
+        st.write(divs[divs['Dividends'] > 0].join(prices, how='inner'))
 
         # Add a title to the div/date chart
         div_chart_title = f'Dividends Over Time for {symbol}'
