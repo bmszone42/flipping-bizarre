@@ -19,32 +19,6 @@ def download_data(symbols, period='max'):
             
             ticker = yf.Ticker(symbol)
             stock_info = ticker.info
-            
-                        # Assuming you have the `stock_info` dictionary obtained from `ticker.info`
-            stock_info = {
-                "maxAge": 86400,
-                "previousClose": 291.07,
-                "open": 290.26,
-                "dayLow": 289.38,
-                "dayHigh": 293.45211449823232,
-                "exchange": "NYQ",
-                "quoteType": "EQUITY",
-                "symbol": "MCD",
-                "targetHighPrice": 383,
-                "targetLowPrice": 300,
-                "targetMeanPrice": 328.94,
-                "targetMedianPrice": 330
-            }
-            
-            # Create a new DataFrame 'new_df' with the specified data
-            new_df = pd.DataFrame([stock_info])
-            
-            # Display the new DataFrame
-            st.write(new_df)
-
-            # Print available data for the stock
-            #st.write(f"Available data for {symbol}:")
-            #st.write(stock_info)
 
             history = ticker.history(period=period)
             dividends = ticker.dividends.rename(f'{symbol}_Dividends')
@@ -52,8 +26,27 @@ def download_data(symbols, period='max'):
             df = pd.concat([history, dividends], axis=1)
             data[symbol] = df
 
+                # Create a new DataFrame 'new_df' with specified columns from ticker.info
+            new_df = pd.DataFrame()
+            new_row = {
+                "previousClose": stock_info.get("previousClose"),
+                "open": stock_info.get("open"),
+                "dayLow": stock_info.get("dayLow"),
+                "dayHigh": stock_info.get("dayHigh"),
+                "exchange": stock_info.get("exchange"),
+                "quoteType": stock_info.get("quoteType"),
+                "symbol": stock_info.get("symbol"),
+                "targetHighPrice": stock_info.get("targetHighPrice"),
+                "targetLowPrice": stock_info.get("targetLowPrice"),
+                "targetMeanPrice": stock_info.get("targetMeanPrice"),
+                "targetMedianPrice": stock_info.get("targetMedianPrice"),
+            }
+            new_df = new_df.append(new_row, ignore_index=True)
+
+            st.write('New DATA')
+            st.write(new_df(head))
         
-            
+      
         except:
             st.error(f"Failed to download data for symbol: {symbol}. Please check if the symbol is correct.")
     return data
