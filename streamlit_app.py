@@ -84,7 +84,7 @@ def setup_streamlit():
 
     return period, symbols, new_symbol, search_button, color
     
-def perform_analysis(symbol, data, color):
+def perform_analysis(symbol, data, color, new_df):
     st.subheader(symbol)
 
     prices = data[symbol][['Close']]
@@ -225,7 +225,7 @@ def main():
     st.header('Analysis')
     for symbol in symbols:
         try:
-            perform_analysis(symbol, data, color)
+            perform_analysis(symbol, data, color, new_df)
         except Exception as e:
             print("Error occurred in perform_analysis:", e)  # Debug print statement
 
