@@ -19,6 +19,13 @@ def download_data(symbols, period='max'):
             
             ticker = yf.Ticker(symbol)
             stock_info = ticker.info
+
+            
+            # Print available data for the stock
+            print(f"Available data for {symbol}:")
+            print(stock_info)
+
+            
             history = ticker.history(period=period)
             dividends = ticker.dividends.rename(f'{symbol}_Dividends')
             df = pd.concat([history, dividends], axis=1)
