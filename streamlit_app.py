@@ -30,7 +30,7 @@ def download_data(symbols, period='max'):
             dividends = ticker.dividends.rename(f'{symbol}_Dividends')
             df = pd.concat([history, dividends], axis=1)
             data[symbol] = df
-            st.write('Dataframe)')
+            st.write('Dataframe is below')
             st.write(df(head))
             
         except:
