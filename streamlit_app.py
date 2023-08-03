@@ -22,8 +22,8 @@ def download_data(symbols, period='max'):
 
             
             # Print available data for the stock
-            print(f"Available data for {symbol}:")
-            print(stock_info)
+            st.write(f"Available data for {symbol}:")
+            st.write(stock_info)
 
             
             history = ticker.history(period=period)
