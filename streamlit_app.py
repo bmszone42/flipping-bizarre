@@ -30,6 +30,9 @@ def download_data(symbols, period='max'):
             dividends = ticker.dividends.rename(f'{symbol}_Dividends')
             df = pd.concat([history, dividends], axis=1)
             data[symbol] = df
+            st.write('Dataframe)')
+            st.write(df(head))
+            
         except:
             st.error(f"Failed to download data for symbol: {symbol}. Please check if the symbol is correct.")
     return data
