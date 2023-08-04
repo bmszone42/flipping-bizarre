@@ -157,7 +157,7 @@ def perform_analysis(symbol, data, color, new_df):
             
             # Display the DataFrame with dividend dates, closing prices, and prices after dividends
             st.write('Dividend Changes Over time')
-            st.table(dividend_changes)
+            st.write(dividend_changes)
 
         else:
             st.write("No dividend data available for this stock.")
