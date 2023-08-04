@@ -171,17 +171,16 @@ def main():
         ticker = yf.Ticker(symbol)
         stock_info = ticker.info
         new_row = {
+            "symbol": stock_info.get("symbol"),
             "previousClose": stock_info.get("previousClose"),
             "open": stock_info.get("open"),
             "dayLow": stock_info.get("dayLow"),
             "dayHigh": stock_info.get("dayHigh"),
-            "exchange": stock_info.get("exchange"),
-            "quoteType": stock_info.get("quoteType"),
-            "symbol": stock_info.get("symbol"),
             "targetHighPrice": stock_info.get("targetHighPrice"),
             "targetLowPrice": stock_info.get("targetLowPrice"),
             "targetMeanPrice": stock_info.get("targetMeanPrice"),
             "targetMedianPrice": stock_info.get("targetMedianPrice"),
+            "exchange": stock_info.get("exchange"),
         }
         new_df_data.append(new_row)
 
@@ -189,7 +188,7 @@ def main():
 
     # Display the new DataFrame 
     st.header('Extra - ticker Data')
-    st.write(new_df.head())
+    st.write(new_df)
 
     st.header('Analysis')
     for symbol in symbols:
