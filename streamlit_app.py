@@ -112,7 +112,11 @@ def get_dividend_for_date(div_data, date):
     return None
 
 def days_to_reach(prices, target):
-  return np.argmax(prices >= target)
+    idx = np.argmax(prices >= target)
+    if idx == 0 and prices[0] < target:
+        return np.nan
+    return idx
+
 
 def calculate_dividend_metrics(divs, prices):
     clean_prices = prices.dropna().values
