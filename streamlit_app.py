@@ -86,7 +86,7 @@ def perform_analysis(symbol, data, color, new_df):
                 marker=dict(
                     symbol='star',
                     size=12,
-                    color=color,
+                    color='white',
                     line=dict(width=2, color='DarkSlateGrey')
                 ),
                 text=prices.loc[div_dates, 'Close'].round(2),
