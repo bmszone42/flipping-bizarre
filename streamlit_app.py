@@ -90,6 +90,8 @@ def perform_analysis(symbol, data, color, new_df):
             div_chart_title = f'Dividends Over Time for {symbol}'
             plot_dividends(divs, color, title=div_chart_title)
 
+            # Show dividend metrics
+            st.write("Dividend Metrics:")
             show_dividend_targets(divs, prices)
             
         else:
