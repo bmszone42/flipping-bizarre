@@ -122,10 +122,10 @@ def perform_analysis(symbol, data, color, new_df):
             
             st.plotly_chart(fig)
 
-            # Display the DataFrame with the dividend dates and closing price on those dates
-            div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
-            st.write("Dividend Dates with Closing Prices:")
-            st.write(div_dates_with_prices)
+            # # Display the DataFrame with the dividend dates and closing price on those dates
+            # div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
+            # st.write("Dividend Dates with Closing Prices:")
+            # st.write(div_dates_with_prices)
 
         else:
             st.write("No dividend data available for this stock.")
@@ -151,29 +151,6 @@ def main():
         st.subheader(symbol)
         st.write(df.head())
 
-    for symbol, df in data.items():
-
-        st.subheader(symbol)
-        
-        # Make copy of DataFrame
-        df_analysis = df.copy()
-        
-        # Get dividend dates
-        div_dates = get_dividends(df_analysis).index
-        
-        # Create index of dates to show
-        rows_to_show = []
-        for date in div_dates:
-            rows_to_show.append(date)
-            rows_to_show.append(date + pd.Timedelta(days=1))
-            rows_to_show.append(date + pd.Timedelta(days=2))
-            rows_to_show.append(date + pd.Timedelta(days=3))
-    
-            # Filter DataFrame
-            df_analysis = df_analysis.loc[rows_to_show]
-            
-            # Display filtered DataFrame
-            st.write(df_analysis.head())
 
      # Create a new DataFrame 'new_df' with specified columns from ticker.info
     new_df_data = []
