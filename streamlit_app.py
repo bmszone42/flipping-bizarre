@@ -185,14 +185,14 @@ def perform_analysis(symbol, data, color, new_df):
             except KeyError as e:
               print("Error extracting next day price:", e)
             
-            # Add columns for prices on different days  
-            for days in [5, 10, 15]:
-              try:
-                label = f'Price +{days} Days'
-                shift = pd.Timedelta(days=days)
-                div_dates_with_prices[label] = prices.loc[div_dates + shift, 'Close'].values
-              except KeyError as e:
-                 print(f"Error extracting price for {days} days:", e)
+            # # Add columns for prices on different days  
+            # for days in [5, 10, 15]:
+            #   try:
+            #     label = f'Price +{days} Days'
+            #     shift = pd.Timedelta(days=days)
+            #     div_dates_with_prices[label] = prices.loc[div_dates + shift, 'Close'].values
+            #   except KeyError as e:
+            #      print(f"Error extracting price for {days} days:", e)
             
             #print(div_dates_with_prices)
 
