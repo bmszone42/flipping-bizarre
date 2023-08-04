@@ -40,7 +40,13 @@ def get_dividends(df):
         return pd.DataFrame()
 
 def setup_streamlit():
-    st.title('Dividend Stock Analysis')  
+    current_time = datetime.now().strftime("%H:%M:%S")
+
+    st.markdown(f"""
+    # :detective: :chart_with_upwards_trend: **Dividend Detective** :moneybag: :mag:
+    Uncover the mysteries of stock dividends and their impact on price performance!
+    ## Updated at {current_time}
+    """)
     st.sidebar.header('Input')
 
     # Add a dropdown to select period
