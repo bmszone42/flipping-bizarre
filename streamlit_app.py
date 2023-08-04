@@ -40,29 +40,7 @@ def get_dividends(df):
     else:
         return pd.DataFrame()
 
-# Modified dividend metrics function
-def calculate_dividend_metrics(divs, prices):
 
-  clean_prices = prices.dropna().values
-  high_prices = [clean_prices[max(i-365, 0):i] for i in range(1, len(clean_prices))]
-
-  results = []
-  for date, div in divs.iterrows():
-    target_prices = [div * (1 + target) for target in TARGETS]
-    days_to_targets = [days_to_reach(hp, tp) for hp, tp in zip(high_prices, target_prices)]
-    averages = [mean(col) for col in zip(*days_to_targets)]
-
-    result = [date.year, *averages]
-    results.append(result)
-  
-  return results
-
-# Simplified show targets  
-def show_dividend_targets(divs, prices):
-  results = calculate_dividend_metrics(divs, prices)
-  targets = [f"{target*100}%" for target in TARGETS]
-  df = pd.DataFrame(results, columns=["Year", *targets])
-  st.write(df)
 
 def setup_streamlit():
     st.title('Dividend Stock Analysis')  
@@ -148,6 +126,31 @@ def get_dividend_for_date(div_data, date):
         if div_date == date.strftime("%Y-%m-%d"):
             return div
     return None
+
+
+# Modified dividend metrics function
+def calculate_dividend_metrics(divs, prices):
+
+  clean_prices = prices.dropna().values
+  high_prices = [clean_prices[max(i-365, 0):i] for i in range(1, len(clean_prices))]
+
+  results = []
+  for date, div in divs.iterrows():
+    target_prices = [div * (1 + target) for target in TARGETS]
+    days_to_targets = [days_to_reach(hp, tp) for hp, tp in zip(high_prices, target_prices)]
+    averages = [mean(col) for col in zip(*days_to_targets)]
+
+    result = [date.year, *averages]
+    results.append(result)
+  
+  return results
+
+# Simplified show targets  
+def show_dividend_targets(divs, prices):
+  results = calculate_dividend_metrics(divs, prices)
+  targets = [f"{target*100}%" for target in TARGETS]
+  df = pd.DataFrame(results, columns=["Year", *targets])
+  st.write(df)
 
 def main():
     params = setup_streamlit()
