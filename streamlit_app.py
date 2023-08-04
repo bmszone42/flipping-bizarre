@@ -198,9 +198,9 @@ def main():
         except Exception as e:
             print("Error occurred in perform_analysis:", e)  # Debug print statement
 
-    st.header('Combined view')
-    combined = pd.concat([data[symbol][f'{symbol}_Dividends'] for symbol in symbols], axis=1)
-    st.write(combined)
+    #st.header('Combined view')
+    #combined = pd.concat([data[symbol][f'{symbol}_Dividends'] for symbol in symbols], axis=1)
+    #st.write(combined)
 
 if __name__ == "__main__":
     main()
