@@ -71,16 +71,13 @@ def perform_analysis(symbol, data, color, new_df, weeks):
     fig = px.line(prices, line_shape="linear", color_discrete_sequence=[color])
     fig.update_yaxes(title='Closing Price ($)')
 
-    # Add a title to the price/date chart
     fig.update_layout(title=f'Price Over Time for {symbol}', xaxis_title='Date')
 
     divs = get_dividends(data[symbol])
     if not divs.empty:
-        div_dates = divs[divs['Dividends'] > 0].index.drop_duplicates()  # Keep only unique dividend payment dates with dividends greater than 0
+        div_dates = divs[divs['Dividends'] > 0].index.drop_duplicates()
 
         if not div_dates.empty:
-            # Add stars to the price graph for dividend payment dates with dividends greater than 0
-            # Plot dividend stars
             fig.add_trace(go.Scatter(
                 x=div_dates,
                 y=prices.loc[div_dates, 'Close'],
@@ -96,47 +93,30 @@ def perform_analysis(symbol, data, color, new_df, weeks):
                 name=symbol + ' dividend')
             )
 
-            # Sort dividend dates
             div_dates = div_dates.sort_values()
-            
-            # Create lists for x and y line values
+
             x_line = []
             y_line = []
-            
-            # Loop through dividend dates 
+
             for i in range(len(div_dates)-1):
-              x_line.append(div_dates[i])
-              x_line.append(div_dates[i+1])
-              
-              y_line.append(prices.loc[div_dates[i], 'Close']) 
-              y_line.append(prices.loc[div_dates[i+1], 'Close'])
+                x_line.append(div_dates[i])
+                x_line.append(div_dates[i+1])
 
-            # # Check if the next day's price is up or down
-            # next_day_prices = prices.loc[div_dates[i+1]]
-            # up_down = 'green' if next_day_prices > prices.loc[div_dates[i]] else 'red'
+                y_line.append(prices.loc[div_dates[i], 'Close']) 
+                y_line.append(prices.loc[div_dates[i+1], 'Close'])
 
-            # fig.add_trace(go.Scatter(
-            #   x=div_dates[i+1],
-            #   y=next_day_prices,
-            #   mode='markers',
-            #   marker=dict(symbol='triangle', size=12, color=up_down),
-            #   showlegend=False
-            # ))
-
-            # Plot connecting line
             fig.add_trace(go.Scatter(
-              x=x_line,
-              y=y_line,
-              mode='lines',
-              line=dict(color='white', width=2),
-              showlegend=False
+                x=x_line,
+                y=y_line,
+                mode='lines',
+                line=dict(color='white', width=2),
+                showlegend=False
             ))
-            
+
             st.plotly_chart(fig)
 
             div_dates = div_dates.tz_convert(prices.index.tz)
 
-            # Display the DataFrame with the dividend dates and closing price on those dates
             div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
             st.write("Dividend Dates with Closing Prices:")
             st.write(div_dates_with_prices)
@@ -145,23 +125,21 @@ def perform_analysis(symbol, data, color, new_df, weeks):
             dates_with_prices['Dividend Date'] = div_dates
             dates_with_prices['Dividend Date'] = dates_with_prices['Dividend Date'].dt.strftime('%Y-%m-%d')
 
-            # Set Dividend Date as index
             dates_with_prices = dates_with_prices.set_index('Dividend Date')
-            dates_with_prices['Dividend ($)'] = divs.loc[div_dates, 'Dividends'].values
+            dates_with_prices['Dividend Amount'] = divs.loc[div_dates, 'Dividends'].values
 
             try:
-              dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'].values
+                dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'].values
             except KeyError:
-              dates_with_prices['Closing Price'] = prices.nearest(div_dates).loc[div_dates].values
-                
-           for week in weeks:
+                dates_with_prices['Closing Price'] = prices.nearest(div_dates).loc[div_dates].values
+
+            for week in weeks:
                 # Calculate the price after the given number of weeks
                 prices_shifted = prices.shift(-5*week)
-    
+
                 # Add the price and percentage change to the DataFrame
                 dates_with_prices[f'Price at {week} Weeks'] = prices_shifted.loc[div_dates, 'Close'].values
                 dates_with_prices[f'Change at {week} Weeks (%)'] = ((dates_with_prices[f'Price at {week} Weeks'] - dates_with_prices['Closing Price']) / dates_with_prices['Closing Price']) * 100
-
 
             st.write("Dividend Dates with More Closing Prices:")
             st.write(dates_with_prices)
@@ -170,6 +148,7 @@ def perform_analysis(symbol, data, color, new_df, weeks):
             st.write("No dividend data available for this stock.")
     else:
         st.write("No dividend data available for this stock.")
+
     
 def main():
     params = setup_streamlit()
