@@ -153,6 +153,14 @@ def perform_analysis(symbol, data, color, new_df):
                 
             dates_with_prices['Price Next Day'] = prices.loc[div_dates + pd.Timedelta(days=1), 'Close'].values
 
+            # Calculate the price one week after the dividend
+            prices_shifted = prices.shift(-5)
+            dates_with_prices['Price After Week'] = prices_shifted.loc[div_dates, 'Close'].values
+    
+            # Calculate the percentage change
+            dates_with_prices['Price Change (%)'] = ((dates_with_prices['Price After Week'] - dates_with_prices['Closing Price']) / dates_with_prices['Closing Price']) * 100
+
+
             #dates_with_prices['Price Next 2 Days'] = prices.loc[div_dates + pd.Timedelta(days=2), 'Close'].values
             
             # # Calculate percentage change 
