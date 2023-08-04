@@ -55,13 +55,16 @@ def setup_streamlit():
     # Add a dropdown to select plot color
     color = st.sidebar.selectbox('Select plot color', options=['red', 'green', 'blue', 'purple'], index=0)
 
+    # Add a multiselect input for the number of weeks
+    weeks = st.sidebar.multiselect('Weeks to check for price change', options=[1, 2, 3, 4, 5], default=[1, 3, 5])
+
     # Add a 'Search Now' button
     search_button = st.sidebar.button('Search Now')
 
-    return period, symbols, new_symbol, search_button, color
+    return period, symbols, new_symbol, search_button, color, weeks
 
     
-def perform_analysis(symbol, data, color, new_df):
+def perform_analysis(symbol, data, color, new_df, weeks):
     st.subheader(symbol)
 
     prices = data[symbol][['Close']]
@@ -151,24 +154,16 @@ def perform_analysis(symbol, data, color, new_df):
             except KeyError:
               dates_with_prices['Closing Price'] = prices.nearest(div_dates).loc[div_dates].values
                 
-            #dates_with_prices['Price Next Day'] = prices.loc[div_dates + pd.Timedelta(days=1), 'Close'].values
-
-             # Calculate the price one week after the dividend
-            prices_shifted_1_week = prices.shift(-5)
-            prices_shifted_2_weeks = prices.shift(-10)
-            prices_shifted_4_weeks = prices.shift(-20)
+           for week in weeks:
+                # Calculate the price after the given number of weeks
+                prices_shifted = prices.shift(-5*week)
     
-            dates_with_prices['Price at 1 Week'] = prices_shifted_1_week.loc[div_dates, 'Close'].values
-            dates_with_prices['Price at 2 Weeks'] = prices_shifted_2_weeks.loc[div_dates, 'Close'].values
-            dates_with_prices['Price at 4 Weeks'] = prices_shifted_4_weeks.loc[div_dates, 'Close'].values
+                # Add the price and percentage change to the DataFrame
+                dates_with_prices[f'Price at {week} Weeks'] = prices_shifted.loc[div_dates, 'Close'].values
+                dates_with_prices[f'Change at {week} Weeks (%)'] = ((dates_with_prices[f'Price at {week} Weeks'] - dates_with_prices['Closing Price']) / dates_with_prices['Closing Price']) * 100
     
-            # Calculate the percentage change
-            dates_with_prices['Change at 1 Week (%)'] = ((dates_with_prices['Price at 1 Week'] - dates_with_prices['Closing Price']) / dates_with_prices['Closing Price']) * 100
-            dates_with_prices['Change at 2 Weeks (%)'] = ((dates_with_prices['Price at 2 Weeks'] - dates_with_prices['Closing Price']) / dates_with_prices['Closing Price']) * 100
-            dates_with_prices['Change at 4 Weeks (%)'] = ((dates_with_prices['Price at 4 Weeks'] - dates_with_prices['Closing Price']) / dates_with_prices['Closing Price']) * 100
-    
-            st.write("Dividend Dates with Closing Prices:")
-            st.write(dates_with_prices)
+                st.write("Dividend Dates with More Closing Prices:")
+                st.write(dates_with_prices)
 
         else:
             st.write("No dividend data available for this stock.")
@@ -224,7 +219,7 @@ def main():
     st.header('Analysis')
     for symbol in symbols:
         try:
-            perform_analysis(symbol, data, color, new_df)
+            perform_analysis(symbol, data, color, new_df, weeks)
         except Exception as e:
             print("Error occurred in perform_analysis:", e)  # Debug print statement
 
