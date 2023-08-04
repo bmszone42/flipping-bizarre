@@ -143,7 +143,7 @@ def perform_analysis(symbol, data, color, new_df):
             dates_with_prices['Dividend Date'] = dates_with_prices['Dividend Date'].dt.strftime('%Y-%m-%d')
 
             # Set Dividend Date as index
-            dates_with_prices = ddates_with_prices.set_index('Dividend Date')
+            dates_with_prices = dates_with_prices.set_index('Dividend Date')
             dates_with_prices['Dividend Amount'] = divs.loc[div_dates, 'Dividends'].values
 
             try:
