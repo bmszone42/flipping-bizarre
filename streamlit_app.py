@@ -157,12 +157,12 @@ def main():
         symbols.append(new_symbol)
 
     data = download_data(symbols, period)
-    st.header('Data view')
+    #st.header('Data view')
     
     # Displaying the first 5 rows for each stock in the DataFrame
-    for symbol, df in data.items():
-        st.subheader(symbol)
-        st.write(df.head())
+    # for symbol, df in data.items():
+    #     st.subheader(symbol)
+    #     st.write(df.head())
 
 
      # Create a new DataFrame 'new_df' with specified columns from ticker.info
@@ -187,8 +187,8 @@ def main():
 
     new_df = pd.DataFrame(new_df_data)
 
-    # Display the new DataFrame 'new_df'
-    st.header('New DataFrame - ticker.info Data')
+    # Display the new DataFrame 
+    st.header('Extra - ticker Data')
     st.write(new_df.head())
 
     st.header('Analysis')
