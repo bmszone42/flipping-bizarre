@@ -137,7 +137,7 @@ def perform_analysis(symbol, data, color, new_df):
             # st.write(div_dates_with_prices)
 
             div_dates_with_prices = pd.DataFrame()
-            #div_dates_with_prices['Dividend Date'] = div_dates
+            div_dates_with_prices['Dividend Date'] = div_dates
             div_dates_with_prices['Dividend Date'] = div_dates_with_prices['Dividend Date'].dt.strftime('%Y-%m-%d')
 
             # Set Dividend Date as index
