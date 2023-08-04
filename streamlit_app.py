@@ -126,6 +126,22 @@ def perform_analysis(symbol, data, color, new_df):
             div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
             st.write("Dividend Dates with Closing Prices:")
             st.write(div_dates_with_prices)
+
+            # Create datetime index 
+            div_dates_with_prices.index = pd.to_datetime(div_dates_with_prices.index)
+            
+            # Add columns for price changes
+            for days in [30, 60, 90]:
+              col_name = f'Price Change in {days} Days'
+              div_dates_with_prices[col_name] = (div_dates_with_prices['Close'].shift(-days) - div_dates_with_prices['Close']) / div_dates_with_prices['Close'] 
+            
+            # Add formatted date column  
+            div_dates_with_prices['Date'] = div_dates_with_prices.index.strftime('%Y-%m-%d')
+            
+            # Reorder columns
+            div_dates_with_prices = div_dates_with_prices[['Date', 'Close', 'Dividends', 'Price Change in 30 Days', 'Price Change in 60 Days', 'Price Change in 90 Days']]
+            
+            st.write(div_dates_with_prices)
             
         else:
             st.write("No dividend data available for this stock.")
