@@ -151,7 +151,7 @@ def analyze_dividends(symbol, prices, dividends):
         # FIX: Loop through dates and append prices to list
         closing_prices = []
         for date in div_dates:
-            closing_price = prices.loc[date, 'Close']
+            closing_price = prices.at[date, 'Close']
             closing_prices.append(closing_price)
 
         # Assign list of prices instead of indexing with list of dates
