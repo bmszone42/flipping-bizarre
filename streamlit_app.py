@@ -137,6 +137,7 @@ def perform_analysis(symbol, data, color, new_df):
 
             # Display the DataFrame with the dividend dates and closing price on those dates
             div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
+            div_dates_with_prices['Price Next Day'] = prices.loc[div_dates+1, 'Close']
             st.write("Dividend Dates with Closing Prices:")
             st.write(div_dates_with_prices)
 
