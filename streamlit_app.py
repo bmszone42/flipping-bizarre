@@ -41,10 +41,12 @@ def get_dividends(df):
 
 def setup_streamlit():
     current_time = datetime.now().strftime("%H:%M:%S")
+    current_date = datetime.now().strftime("%Y-%m-%d")  # Gets the current date
+
     st.markdown(f"""
     # <span style='color:green'> :chart_with_upwards_trend: **Dividend Detective** :moneybag: :mag: </span>
     Uncover the mysteries of stock dividends and their impact on price performance!
-    ## Updated at {current_time}
+    ## Updated at {current_time} on {current_date}
     """, unsafe_allow_html=True)
     st.sidebar.header('Input')
 
