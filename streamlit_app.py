@@ -104,28 +104,9 @@ def perform_analysis(symbol, data, color, new_df):
             st.write("No dividend data available for this stock.")
     else:
         st.write("No dividend data available for this stock.")
-    
-def plot_dividends(divs, color, title=None):
-    fig = go.Figure()
-    for column in divs.columns:
-        fig.add_trace(go.Bar(x=divs.index, y=divs[column], name=column, marker_color=color))
-    fig.update_layout(yaxis_title="Price ($)", title=title)  # Set the title for the dividends chart
-    st.plotly_chart(fig)
-
-def get_dividend_for_date(div_data, date):
-    for div_date, div in div_data:
-        if div_date == date.strftime("%Y-%m-%d"):
-            return div
-    return None
 
 # Calculate days to reach each target  
 def days_to_reach_targets(prices, divs):
-    print("Prices DataFrame:")
-    print(prices.head())
-
-    print("Dividends DataFrame:")
-    print(divs.head())
-
     results = []
 
     # Match dividend dates to prices
@@ -143,7 +124,6 @@ def days_to_reach_targets(prices, divs):
             results.append(result)
 
     return pd.DataFrame(results, columns=["Date", "Days to 50%", "Days to 75%", "Days to 100%"])
-
 
 # Helper function    
 def days_to_reach(prices, target):
