@@ -162,19 +162,19 @@ def perform_analysis(symbol, data, color, new_df):
             # st.write(dates_with_prices)
 
             # Create new dataframe for 10 day prices
-        post_dividend_prices = pd.DataFrame()
-        
-        # Set dividend date as index 
-        post_dividend_prices['Dividend Date'] = div_dates
-        post_dividend_prices = post_dividend_prices.set_index('Dividend Date')
-        
-        # Get 10 day prices
-        ten_days = pd.Timedelta(days=10)
-        post_dividend_prices['Price 10 Days Later'] = prices.shift(-ten_days).nearest(div_dates).loc[div_dates, 'Close'] 
-        
-        # Display 
-        st.write("10 Day Post Dividend Prices:")
-        st.write(post_dividend_prices)
+            post_dividend_prices = pd.DataFrame()
+            
+            # Set dividend date as index 
+            post_dividend_prices['Dividend Date'] = div_dates
+            post_dividend_prices = post_dividend_prices.set_index('Dividend Date')
+            
+            # Get 10 day prices
+            ten_days = pd.Timedelta(days=10)
+            post_dividend_prices['Price 10 Days Later'] = prices.shift(-ten_days).nearest(div_dates).loc[div_dates, 'Close'] 
+            
+            # Display 
+            st.write("10 Day Post Dividend Prices:")
+            st.write(post_dividend_prices)
 
         else:
             st.write("No dividend data available for this stock.")
