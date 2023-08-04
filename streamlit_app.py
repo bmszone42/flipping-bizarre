@@ -111,20 +111,30 @@ def get_dividend_for_date(div_data, date):
             return div
     return None
 
-# Function to calculate days to reach price targets
+# Calculate days to reach each target  
 def days_to_reach_targets(prices, dividends):
+
   results = []
+
+  # Match dividend dates to prices
+  prices = prices.reindex(dividends.index)
+  prices = prices.fillna(method='ffill')
+
   for date, div in dividends.items():
-        print(date, div)
-        if div > 0:
-            print(prices.loc[date])
-            targets = [price * (1 + target) for target in TARGETS]
-            print(targets)
-      days = [days_to_reach(prices[date:], target) for target in targets]
+    
+    if div > 0:
+    
+      price = prices.loc[date]
+      targets = [price * (1 + tgt) for tgt in TARGETS]
+      
+      days = [days_to_reach(prices.loc[date:], tgt) 
+              for tgt in targets]
+              
       result = [date] + days
       results.append(result)
-  
-  return pd.DataFrame(results, columns=["Date", "Days to 50%", "Days to 75%", "Days to 100%"])
+
+  return pd.DataFrame(results, 
+       columns=["Date", "Days to 50%", "Days to 75%", "Days to 100%"])
 
 # Helper function    
 def days_to_reach(prices, target):
