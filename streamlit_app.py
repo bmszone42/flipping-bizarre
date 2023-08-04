@@ -147,9 +147,9 @@ def perform_analysis(symbol, data, color, new_df):
             div_dates_with_prices['Dividend Amount'] = divs.loc[div_dates, 'Dividends'].values
 
             try:
-              div_dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'] 
+              div_dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'].values
             except KeyError:
-              div_dates_with_prices['Closing Price'] = prices.nearest(div_dates).loc[div_dates]
+              div_dates_with_prices['Closing Price'] = prices.nearest(div_dates).loc[div_dates].values
             #div_dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'].values
             div_dates_with_prices['Price Next Day'] = prices.loc[div_dates + pd.Timedelta(days=1), 'Close'].values
 
