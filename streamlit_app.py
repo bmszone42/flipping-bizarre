@@ -77,7 +77,6 @@ def perform_analysis(symbol, data, color, new_df):
 
         if not div_dates.empty:
             # Add stars to the price graph for dividend payment dates with dividends greater than 0
-            #fig.add_trace(go.Scatter(x=div_dates, y=prices.loc[div_dates, 'Close'], mode='markers', marker=dict(symbol='star', size=12, color=color, line=dict(width=2, color='DarkSlateGrey')), name=symbol + ' dividend'))
             # Plot dividend stars
             fig.add_trace(go.Scatter(
                 x=div_dates,
@@ -93,8 +92,6 @@ def perform_analysis(symbol, data, color, new_df):
                 textposition='top center',
                 name=symbol + ' dividend')
             )
-
-            # After plotting dividend stars
 
             # Sort dividend dates
             div_dates = div_dates.sort_values()
@@ -123,7 +120,6 @@ def perform_analysis(symbol, data, color, new_df):
             #   showlegend=False
             # ))
 
-            
             # Plot connecting line
             fig.add_trace(go.Scatter(
               x=x_line,
@@ -135,10 +131,16 @@ def perform_analysis(symbol, data, color, new_df):
             
             st.plotly_chart(fig)
 
-            # Display the DataFrame with the dividend dates and closing price on those dates
-            div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
-            #div_dates_with_prices['Price Next Day'] = prices.loc[div_dates+1, 'Close'].to_frame()
-            div_dates_with_prices['Price Next Day'] = prices.loc[div_dates+1, 'Close']
+            # # Display the DataFrame with the dividend dates and closing price on those dates
+            # div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
+            # st.write("Dividend Dates with Closing Prices:")
+            # st.write(div_dates_with_prices)
+
+            div_dates_with_prices = pd.DataFrame()
+            div_dates_with_prices['Dividend Date'] = div_dates
+            div_dates_with_prices['Dividend Amount'] = divs.loc[div_dates, 'Dividends'].values
+            div_dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'].values
+            div_dates_with_prices['Price Next Day'] = prices.loc[div_dates + pd.Timedelta(days=1), 'Close'].values
             st.write("Dividend Dates with Closing Prices:")
             st.write(div_dates_with_prices)
 
