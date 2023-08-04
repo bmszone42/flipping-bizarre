@@ -162,8 +162,8 @@ def perform_analysis(symbol, data, color, new_df, weeks):
                 dates_with_prices[f'Price at {week} Weeks'] = prices_shifted.loc[div_dates, 'Close'].values
                 dates_with_prices[f'Change at {week} Weeks (%)'] = ((dates_with_prices[f'Price at {week} Weeks'] - dates_with_prices['Closing Price']) / dates_with_prices['Closing Price']) * 100
     
-                st.write("Dividend Dates with More Closing Prices:")
-                st.write(dates_with_prices)
+            st.write("Dividend Dates with More Closing Prices:")
+            st.write(dates_with_prices)
 
         else:
             st.write("No dividend data available for this stock.")
