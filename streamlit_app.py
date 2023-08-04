@@ -127,36 +127,6 @@ def perform_analysis(symbol, data, color, new_df):
             st.write("Dividend Dates with Closing Prices:")
             st.write(div_dates_with_prices)
 
-           # Create a new DataFrame 'dividend_changes' to store the dividend dates and prices
-            dividend_changes = divs[divs['Dividends'] > 0].join(prices, how='inner')
-            
-            # Create new columns to store prices at 1, 2, and 3 trading days after dividend dates
-            for days in [1, 2, 3]:
-                col_name = f'Price {days} Trading Days After'
-                dividend_changes[col_name] = np.nan
-            
-            # Populate the 'dividend_changes' DataFrame with prices for the next three trading days after each dividend date
-            for index, row in dividend_changes.iterrows():
-                dividend_date = index
-                for days in [1, 2, 3]:
-                    col_name = f'Price {days} Trading Days After'
-                    trading_day_count = 0
-                    while trading_day_count < days:
-                        dividend_date += pd.Timedelta(days=1)
-                        # Check if the date is a trading day (not in 'dividend_changes' index)
-                        if dividend_date not in dividend_changes.index:
-                            continue
-                        trading_day_count += 1
-                    dividend_changes.at[index, col_name] = dividend_changes.at[dividend_date, 'Close']
-            
-            # Reset the index to display the 'Date' column separately
-            dividend_changes.reset_index(inplace=True, drop=True)
-            
-            # Display the DataFrame with dividend dates, closing prices, and prices for the next three trading days after dividends
-            st.write('Dividend Changes Over Time')
-            st.dataframe(dividend_changes)
-
-
         else:
             st.write("No dividend data available for this stock.")
     else:
@@ -180,6 +150,30 @@ def main():
     for symbol, df in data.items():
         st.subheader(symbol)
         st.write(df.head())
+
+    for symbol, df in data.items():
+
+        st.subheader(symbol)
+        
+        # Make copy of DataFrame
+        df_analysis = df.copy()
+        
+        # Get dividend dates
+        div_dates = get_dividends(df_analysis).index
+        
+        # Create index of dates to show
+        rows_to_show = []
+        for date in div_dates:
+            rows_to_show.append(date)
+            rows_to_show.append(date + pd.Timedelta(days=1))
+            rows_to_show.append(date + pd.Timedelta(days=2))
+            rows_to_show.append(date + pd.Timedelta(days=3))
+    
+            # Filter DataFrame
+            df_analysis = df_analysis.loc[rows_to_show]
+            
+            # Display filtered DataFrame
+            st.write(df_analysis.head())
 
      # Create a new DataFrame 'new_df' with specified columns from ticker.info
     new_df_data = []
