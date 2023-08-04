@@ -151,7 +151,7 @@ def perform_analysis(symbol, data, color, new_df):
             except KeyError:
               dates_with_prices['Closing Price'] = prices.nearest(div_dates).loc[div_dates].values
             #div_dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'].values
-            dates_with_prices['Price Next Day'] = prices.loc[div_dates + pd.Timedelta(days=1), 'Close'].values
+            #dates_with_prices['Price Next Day'] = prices.loc[div_dates + pd.Timedelta(days=1), 'Close'].values
 
             dates_with_prices['Price Next 2 Days'] = prices.loc[div_dates + pd.Timedelta(days=2), 'Close'].values
             
