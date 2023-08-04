@@ -111,36 +111,41 @@ def get_dividend_for_date(div_data, date):
             return div
     return None
 
-def days_to_reach(prices, target):
-    idx = np.argmax(prices >= target)
-    if idx == 0 and prices[0] < target:
-        return np.nan
-    return idx
-
-
-def calculate_dividend_metrics(divs, prices):
-    clean_prices = prices.dropna().values
-    high_prices = [clean_prices[max(i-365, 0):i] for i in range(1, len(clean_prices))]
+# Function to calculate days to reach price targets
+def days_to_reach_targets(prices, dividends):
+  results = []
+  for date, div in dividends.iteritems():
+    if div > 0:
+      price = prices.loc[date]
+      targets = [price * (1 + target) for target in TARGETS]
+      days = [days_to_reach(prices[date:], target) for target in targets]
+      result = [date] + days
+      results.append(result)
   
-    results = []
-    for date, div in divs.iterrows():
-        if div['Dividends'] > 0:
-            target_prices = [div * (1 + target) for target in TARGETS]
-            days_to_targets = [days_to_reach(hp, tp) for hp, tp in zip(high_prices, target_prices)]
+  return pd.DataFrame(results, columns=["Date", "Days to 50%", "Days to 75%", "Days to 100%"])
 
-            # Format the date as string before appending to the results list
-            result = [date.strftime('%Y-%m-%d'), *days_to_targets]
-            results.append(result)
+# Helper function    
+def days_to_reach(prices, target):
+  # Returns NaN if target not reached
+  idx = np.argmax(prices >= target) 
+  if idx == 0 and prices[0] < target:
+    return np.nan
+  return idx
 
-    return results
+# Function to analyze and plot results  
+def analyze_dividends(symbol, prices, dividends):
 
-# Simplified show targets  
-def show_dividend_targets(divs, prices):
-  results = calculate_dividend_metrics(divs, prices)
-  targets = [f"{target*100}%" for target in TARGETS]
-  df = pd.DataFrame(results, columns=["Date", "Days to 50%", "Days to 75%", "Days to 100%"])
-  st.write(df)
-
+  # Calculate days to reach targets
+  results = days_to_reach_targets(prices, dividends)
+  
+  # Plot results  
+  fig = px.line(results.set_index('Date'))
+  fig.update_layout(title=f"{symbol} Days to Reach Target")
+  st.plotly_chart(fig)
+  
+  # Display data
+  st.dataframe(results)
+    
 def main():
     params = setup_streamlit()
     if params is None:
@@ -192,6 +197,14 @@ def main():
             perform_analysis(symbol, data, color, new_df)
         except Exception as e:
             print("Error occurred in perform_analysis:", e)  # Debug print statement
+
+      # Analyze each symbol
+    for symbol in symbols:
+  
+        prices = data[symbol]['Close']
+        dividends = data[symbol]['Dividends']
+        st.write('Dividend Analysis')
+        analyze_dividends(symbol, prices, dividends)
 
     st.header('Combined view')
     combined = pd.concat([data[symbol][f'{symbol}_Dividends'] for symbol in symbols], axis=1)
