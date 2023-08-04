@@ -117,16 +117,16 @@ def perform_analysis(symbol, data, color, new_df, weeks):
 
             div_dates = div_dates.tz_convert(prices.index.tz)
 
-            div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
-            st.write("Dividend Dates with Closing Prices:")
-            st.write(div_dates_with_prices)
+            # div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
+            # st.write("Dividend Dates with Closing Prices:")
+            # st.write(div_dates_with_prices)
 
             dates_with_prices = pd.DataFrame()
             dates_with_prices['Dividend Date'] = div_dates
             dates_with_prices['Dividend Date'] = dates_with_prices['Dividend Date'].dt.strftime('%Y-%m-%d')
 
             dates_with_prices = dates_with_prices.set_index('Dividend Date')
-            dates_with_prices['Dividend Amount'] = divs.loc[div_dates, 'Dividends'].values
+            dates_with_prices['Dividend'] = divs.loc[div_dates, 'Dividends'].values
 
             try:
                 dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'].values
@@ -138,8 +138,8 @@ def perform_analysis(symbol, data, color, new_df, weeks):
                 prices_shifted = prices.shift(-5*week)
 
                 # Add the price and percentage change to the DataFrame
-                dates_with_prices[f'Price at {week} Weeks'] = prices_shifted.loc[div_dates, 'Close'].values
-                dates_with_prices[f'Change at {week} Weeks (%)'] = ((dates_with_prices[f'Price at {week} Weeks'] - dates_with_prices['Closing Price']) / dates_with_prices['Closing Price']) * 100
+                dates_with_prices[f'Price at {week} Weeks'] = prices_shifted.loc[div_dates, 'Close'].values.round(2)
+                dates_with_prices[f'Change at {week} Weeks (%)'] = ((dates_with_prices[f'Price at {week} Weeks'] - dates_with_prices['Closing Price']) / dates_with_prices['Closing Price']) * 100).round(2)
 
             st.write("Dividend Dates with More Closing Prices:")
             st.write(dates_with_prices)
