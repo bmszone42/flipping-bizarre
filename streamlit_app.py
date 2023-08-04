@@ -130,35 +130,31 @@ def perform_analysis(symbol, data, color, new_df):
            # Create a new DataFrame 'dividend_changes' to store the dividend dates and prices
             dividend_changes = divs[divs['Dividends'] > 0].join(prices, how='inner')
             
-            # Create new columns to store prices at 10, 20, and 30 days after dividend dates
-            dividend_changes['Price 10 Days After'] = np.nan
-            dividend_changes['Price 20 Days After'] = np.nan
-            dividend_changes['Price 30 Days After'] = np.nan
+            # Create new columns to store prices at 1, 2, and 3 trading days after dividend dates
+            for days in [1, 2, 3]:
+                col_name = f'Price {days} Trading Days After'
+                dividend_changes[col_name] = np.nan
             
-            # Function to find the next trading day
-            def next_trading_day(date):
-                next_day = date + pd.Timedelta(days=1)
-                while next_day not in dividend_changes.index:
-                    next_day += pd.Timedelta(days=1)
-                return next_day
-            
-            # Populate the 'dividend_changes' DataFrame with prices at 10, 20, and 30 days after each dividend date
-            for dividend_date in dividend_changes.index:
-                price_10_days_after = next_trading_day(dividend_date + pd.Timedelta(days=10))
-                price_20_days_after = next_trading_day(dividend_date + pd.Timedelta(days=20))
-                price_30_days_after = next_trading_day(dividend_date + pd.Timedelta(days=30))
-                
-                dividend_changes.at[dividend_date, 'Price 10 Days After'] = dividend_changes.at[price_10_days_after, 'Close']
-                dividend_changes.at[dividend_date, 'Price 20 Days After'] = dividend_changes.at[price_20_days_after, 'Close']
-                dividend_changes.at[dividend_date, 'Price 30 Days After'] = dividend_changes.at[price_30_days_after, 'Close']
+            # Populate the 'dividend_changes' DataFrame with prices for the next three trading days after each dividend date
+            for index, row in dividend_changes.iterrows():
+                dividend_date = index
+                for days in [1, 2, 3]:
+                    col_name = f'Price {days} Trading Days After'
+                    trading_day_count = 0
+                    while trading_day_count < days:
+                        dividend_date += pd.Timedelta(days=1)
+                        # Check if the date is a trading day (not in 'dividend_changes' index)
+                        if dividend_date not in dividend_changes.index:
+                            continue
+                        trading_day_count += 1
+                    dividend_changes.at[index, col_name] = dividend_changes.at[dividend_date, 'Close']
             
             # Reset the index to display the 'Date' column separately
             dividend_changes.reset_index(inplace=True)
             
-            # Display the DataFrame with dividend dates, closing prices, and prices after dividends
+            # Display the DataFrame with dividend dates, closing prices, and prices for the next three trading days after dividends
             st.write('Dividend Changes Over Time')
             st.dataframe(dividend_changes)
-
 
         else:
             st.write("No dividend data available for this stock.")
