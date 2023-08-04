@@ -114,7 +114,7 @@ def get_dividend_for_date(div_data, date):
 # Function to calculate days to reach price targets
 def days_to_reach_targets(prices, dividends):
   results = []
-  for date, div in dividends.iteritems():
+  for date, div in dividends.items():
     if div > 0:
       price = prices.loc[date]
       targets = [price * (1 + target) for target in TARGETS]
