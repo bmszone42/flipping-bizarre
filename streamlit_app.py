@@ -139,7 +139,7 @@ def perform_analysis(symbol, data, color, new_df, weeks):
 
                 # Add the price and percentage change to the DataFrame
                 dates_with_prices[f'Price at {week} Weeks'] = prices_shifted.loc[div_dates, 'Close'].values.round(2)
-                dates_with_prices[f'Change at {week} Weeks (%)'] = ((dates_with_prices[f'Price at {week} Weeks'] - dates_with_prices['Closing Price']) / dates_with_prices['Closing Price']) * 100).round(2)
+                dates_with_prices[f'Change at {week} Weeks (%)'] = ((dates_with_prices[f'Price at {week} Weeks'] - dates_with_prices['Closing Price']) / dates_with_prices['Closing Price'] * 100).round(2)
 
             st.write("Dividend Dates with More Closing Prices:")
             st.write(dates_with_prices)
