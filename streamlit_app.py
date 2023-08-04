@@ -41,12 +41,11 @@ def get_dividends(df):
 
 def setup_streamlit():
     current_time = datetime.now().strftime("%H:%M:%S")
-
     st.markdown(f"""
-    # :detective: :chart_with_upwards_trend: **Dividend Detective** :moneybag: :mag:
+    # <span style='color:green'> :detective: :chart_with_upwards_trend: **Dividend Detective** :moneybag: :mag: </span>
     Uncover the mysteries of stock dividends and their impact on price performance!
     ## Updated at {current_time}
-    """)
+    """, unsafe_allow_html=True)
     st.sidebar.header('Input')
 
     # Add a dropdown to select period
