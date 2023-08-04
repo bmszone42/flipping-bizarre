@@ -103,6 +103,24 @@ def perform_analysis(symbol, data, color, new_df):
                 textposition='top center',
                 name=symbol + ' dividend')
             )
+
+            # Get x values for line 
+            div_dates = div_dates.sort_values()
+            x_line = div_dates.tolist() + div_dates.shift(-1).tolist()
+            x_line = x_line[:-1] 
+            
+            # Get y values for line
+            y_line = prices.loc[div_dates, 'Close'].tolist() + prices.loc[div_dates, 'Close'].shift(-1).tolist()
+            y_line = y_line[:-1]
+            
+            # Plot line 
+            fig.add_trace(go.Scatter(
+                x=x_line, 
+                y=y_line,
+                mode='lines',
+                line=dict(color=color, width=2),
+                showlegend=False)
+            )
             st.plotly_chart(fig)
 
             # Display the DataFrame with the dividend dates and closing price on those dates
