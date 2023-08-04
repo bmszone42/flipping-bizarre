@@ -194,7 +194,7 @@ def perform_analysis(symbol, data, color, new_df):
               except KeyError as e:
                  print(f"Error extracting price for {days} days:", e)
             
-            print(div_dates_with_prices)
+            #print(div_dates_with_prices)
 
             st.write("Dividend Dates with Closing Prices:")
             st.write(div_dates_with_prices)
