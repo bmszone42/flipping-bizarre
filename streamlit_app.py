@@ -185,7 +185,7 @@ def main():
     new_df = pd.DataFrame(new_df_data)
 
     # Display the new DataFrame 
-    st.header(f'Ticker Data for {symbol}')
+    st.header(f'Ticker Data for {", ".join(symbols)}')
     st.write(new_df)
 
     st.header('Analysis')
