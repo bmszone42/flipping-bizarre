@@ -127,15 +127,15 @@ def perform_analysis(symbol, data, color, new_df):
             st.write("Dividend Dates with Closing Prices:")
             st.write(div_dates_with_prices)
 
-            # Create datetime index 
-            div_dates_with_prices.index = pd.to_datetime(div_dates_with_prices.index)
+            # Sort the DataFrame by date
+            div_dates_with_prices = div_dates_with_prices.sort_index()
             
             # Add columns for price changes
             for days in [30, 60, 90]:
-              col_name = f'Price Change in {days} Days'
-              div_dates_with_prices[col_name] = (div_dates_with_prices['Close'].shift(-days) - div_dates_with_prices['Close']) / div_dates_with_prices['Close'] 
+                col_name = f'Price Change in {days} Days'
+                div_dates_with_prices[col_name] = (div_dates_with_prices['Close'].shift(-days) - div_dates_with_prices['Close']) / div_dates_with_prices['Close']
             
-            # Add formatted date column  
+            # Add formatted date column
             div_dates_with_prices['Date'] = div_dates_with_prices.index.strftime('%Y-%m-%d')
             
             # Reorder columns
