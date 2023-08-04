@@ -117,37 +117,45 @@ def perform_analysis(symbol, data, color, new_df):
             for i in range(len(div_dates)-1):
             
               # Append dates
-              x_line.append(div_dates[i]) 
+              x_line.append(div_dates[i])
               x_line.append(div_dates[i+1])
             
-              # Append prices 
+              # Append prices
               y_line.append(prices.loc[div_dates[i], 'Close'])
               y_line.append(prices.loc[div_dates[i+1], 'Close'])
             
-              # Calculate % increase
+              # Calculate increase  
               pct_incr = (y_line[i+1] - y_line[i]) / y_line[i] * 100
-            
-              # Text x position 
+              
+              # Text position
               x_text = (div_dates[i] + div_dates[i+1]) / 2
-            
-              # Text y position - adjust so no overlap with line
               y_text = np.mean(y_line[i:i+2]) + 5
-            
+              
               # Add text trace
               fig.add_trace(go.Scatter(
-                x=[x_text],
+                x=[x_text], 
                 y=[y_text],
-                text=['{:.2f}% Increase'.format(pct_incr)], 
-                mode='text',
+                text=['{:.2f}'.format(pct_incr)],
+                textposition='top center',
+                mode='text', 
                 showlegend=False
               ))
             
-            # Add line trace  
+              # Print debug values
+              print("x text:", x_text)
+              print("y text:", y_text)
+              print("Increase:", pct_incr)
+            
+            # Set y-axis range  
+            fig.update_yaxes(range=[-10, max(y_line)*1.1])
+            
+            # Add line trace
             fig.add_trace(go.Scatter(
-              x=x_line, y=y_line,
+              x=x_line,
+              y=y_line,
               mode='lines',
               line=dict(color='white', width=2),
-              showlegend=False
+              showlegend=False 
             ))
 
             st.plotly_chart(fig)
