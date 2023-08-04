@@ -150,11 +150,12 @@ def perform_analysis(symbol, data, color, new_df):
                     dividend_changes.at[index, col_name] = dividend_changes.at[dividend_date, 'Close']
             
             # Reset the index to display the 'Date' column separately
-            dividend_changes.reset_index(inplace=True)
+            dividend_changes.reset_index(inplace=True, drop=True)
             
             # Display the DataFrame with dividend dates, closing prices, and prices for the next three trading days after dividends
             st.write('Dividend Changes Over Time')
             st.dataframe(dividend_changes)
+
 
         else:
             st.write("No dividend data available for this stock.")
