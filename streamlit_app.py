@@ -132,18 +132,23 @@ def days_to_reach(prices, target):
     return np.nan
   return idx
 
-# Function to analyze and plot results  
 def analyze_dividends(symbol, prices, dividends):
 
-  # Calculate days to reach targets
   results = days_to_reach_targets(prices, dividends)
-  
-  # Plot results  
-  fig = px.line(results.set_index('Date'))
+    
+  st.write(results) # inspect results dataframe
+
+  # Check index is set properly
+  results.set_index('Date', inplace=True)
+
+  st.write(results.head())
+
+  # Plot results
+  fig = px.line(results) 
   fig.update_layout(title=f"{symbol} Days to Reach Target")
-  st.plotly_chart(fig)
   
-  # Display data
+  st.plotly_chart(fig)
+
   st.dataframe(results)
     
 def main():
