@@ -137,7 +137,11 @@ def perform_analysis(symbol, data, color, new_df):
             # st.write(div_dates_with_prices)
 
             div_dates_with_prices = pd.DataFrame()
-            div_dates_with_prices['Dividend Date'] = div_dates
+            #div_dates_with_prices['Dividend Date'] = div_dates
+            div_dates_with_prices['Dividend Date'] = div_dates_with_prices['Dividend Date'].dt.strftime('%Y-%m-%d')
+
+            # Set Dividend Date as index
+            div_dates_with_prices = div_dates_with_prices.set_index('Dividend Date')
             div_dates_with_prices['Dividend Amount'] = divs.loc[div_dates, 'Dividends'].values
             div_dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'].values
             div_dates_with_prices['Price Next Day'] = prices.loc[div_dates + pd.Timedelta(days=1), 'Close'].values
