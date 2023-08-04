@@ -145,6 +145,8 @@ def perform_analysis(symbol, data, color, new_df):
             div_dates_with_prices['Dividend Amount'] = divs.loc[div_dates, 'Dividends'].values
             div_dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'].values
             div_dates_with_prices['Price Next Day'] = prices.loc[div_dates + pd.Timedelta(days=1), 'Close'].values
+
+            div_dates = divs[divs['Dividends'] > 0].index.tz_localize('UTC').tz_convert('America/New_York')
             
             # # Add column for price 10 days after dividend
             div_dates_with_prices['Price +10 Days'] = prices.loc[div_dates + pd.Timedelta(days=10), 'Close'].values
