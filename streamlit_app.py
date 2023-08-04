@@ -138,28 +138,28 @@ def perform_analysis(symbol, data, color, new_df):
             st.write("Dividend Dates with Closing Prices:")
             st.write(div_dates_with_prices)
 
-            div_dates_with_prices = pd.DataFrame()
-            div_dates_with_prices['Dividend Date'] = div_dates
-            div_dates_with_prices['Dividend Date'] = div_dates_with_prices['Dividend Date'].dt.strftime('%Y-%m-%d')
+            dates_with_prices = pd.DataFrame()
+            dates_with_prices['Dividend Date'] = div_dates
+            dates_with_prices['Dividend Date'] = dates_with_prices['Dividend Date'].dt.strftime('%Y-%m-%d')
 
             # Set Dividend Date as index
-            div_dates_with_prices = div_dates_with_prices.set_index('Dividend Date')
-            div_dates_with_prices['Dividend Amount'] = divs.loc[div_dates, 'Dividends'].values
+            dates_with_prices = ddates_with_prices.set_index('Dividend Date')
+            dates_with_prices['Dividend Amount'] = divs.loc[div_dates, 'Dividends'].values
 
             try:
-              div_dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'].values
+              dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'].values
             except KeyError:
-              div_dates_with_prices['Closing Price'] = prices.nearest(div_dates).loc[div_dates].values
+              dates_with_prices['Closing Price'] = prices.nearest(div_dates).loc[div_dates].values
             #div_dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'].values
-            div_dates_with_prices['Price Next Day'] = prices.loc[div_dates + pd.Timedelta(days=1), 'Close'].values
+            dates_with_prices['Price Next Day'] = prices.loc[div_dates + pd.Timedelta(days=1), 'Close'].values
 
-            div_dates_with_prices['Price Next 2 Days'] = prices.loc[div_dates + pd.Timedelta(days=2), 'Close'].values
+            dates_with_prices['Price Next 2 Days'] = prices.loc[div_dates + pd.Timedelta(days=2), 'Close'].values
             
             # # Calculate percentage change 
             # div_dates_with_prices['Percent Change (10 Days)'] = (div_dates_with_prices['Price +10 Days'] - div_dates_with_prices['Closing Price']) / div_dates_with_prices['Closing Price'] * 100
 
-            st.write("Dividend Dates with Closing Prices:")
-            st.write(div_dates_with_prices)
+            st.write("Dividend Dates with More Closing Prices:")
+            st.write(dates_with_prices)
 
         else:
             st.write("No dividend data available for this stock.")
