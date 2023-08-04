@@ -135,30 +135,29 @@ def days_to_reach(prices, target):
     return idx
 
 def analyze_dividends(symbol, prices, dividends):
-    results = days_to_reach_targets(prices, dividends)
-    
-    st.write(results)  # Inspect results dataframe
+    def analyze_dividends(symbol, prices, dividends):
 
-    # Check index is set properly
-    results.set_index('Date', inplace=True)
+  # Reindex prices to match dividends
+  prices = prices.reindex(dividends.index) 
+  
+  # Fill missing values  
+  prices = prices.fillna(method='ffill')
 
-    st.write(results.head())
+  results = days_to_reach_targets(prices, dividends)
 
-    div_dates = dividends[dividends > 0].index.drop_duplicates()  # Keep only unique dividend payment dates with dividends greater than 0
+  # Rest of code to calculate results
 
-    if not div_dates.empty:
+  div_dates = dividends[dividends > 0].index.drop_duplicates()
 
-        # FIX: Loop through dates and append prices to list
-        closing_prices = []
-        for date in div_dates:
-            closing_price = prices.at[date, 'Close']
-            closing_prices.append(closing_price)
+  if not div_dates.empty:
 
-        # Assign list of prices instead of indexing with list of dates
-        results['Closing Price on Dividend Day'] = closing_prices
+    closing_prices = []
 
-    # if not div_dates.empty:
-    #     results['Closing Price on Dividend Day'] = prices.loc[div_dates, 'Close']
+    for date in div_dates:
+      closing_price = prices.at[date, 'Close'] 
+      closing_prices.append(closing_price)
+
+    results['Closing Price on Dividend Day'] = closing_prices
 
     # Calculate 50% increase dates
     results['50% Increase Date'] = np.nan
