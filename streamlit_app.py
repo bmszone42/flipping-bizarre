@@ -140,7 +140,7 @@ def perform_analysis(symbol, data, color, new_df):
                     if date_after_dividend in div_dates_with_prices.index:
                         price_after_dividend = div_dates_with_prices.at[date_after_dividend, 'Close']
                     else:
-                        # If the date is not found in the DataFrame, use NaN
+                        # If the date is not found in the DataFrame, set the price to NaN
                         price_after_dividend = np.nan
                     prices_after_dividends.append(price_after_dividend)
             
@@ -149,15 +149,15 @@ def perform_analysis(symbol, data, color, new_df):
             div_dates_with_prices['Price 20 Days After'] = prices_after_dividends[len(div_dates):2 * len(div_dates)]
             div_dates_with_prices['Price 30 Days After'] = prices_after_dividends[2 * len(div_dates):]
             
+            # Create a new DataFrame 'dividend_changes' with relevant columns
+            dividend_changes = div_dates_with_prices[['Close', 'Dividends', 'Price 10 Days After', 'Price 20 Days After', 'Price 30 Days After']]
+            
             # Add formatted date column
-            div_dates_with_prices['Date'] = div_dates_with_prices.index.strftime('%Y-%m-%d')
+            dividend_changes['Date'] = dividend_changes.index.strftime('%Y-%m-%d')
             
-            # Reorder columns
-            div_dates_with_prices = div_dates_with_prices[['Date', 'Close', 'Dividends', 'Price 10 Days After', 'Price 20 Days After', 'Price 30 Days After']]
-            
-            st.write(div_dates_with_prices)
+            # Display the DataFrame with dividend dates, closing prices, and prices after dividends
+            st.table(dividend_changes)
 
-            
         else:
             st.write("No dividend data available for this stock.")
     else:
