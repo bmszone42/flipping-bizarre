@@ -87,8 +87,22 @@ def perform_analysis(symbol, data, color, new_df):
 
         if not div_dates.empty:
             # Add stars to the price graph for dividend payment dates with dividends greater than 0
-            fig.add_trace(go.Scatter(x=div_dates, y=prices.loc[div_dates, 'Close'], mode='markers', marker=dict(symbol='star', size=12, color=color, line=dict(width=2, color='DarkSlateGrey')), name=symbol + ' dividend'))
-
+            #fig.add_trace(go.Scatter(x=div_dates, y=prices.loc[div_dates, 'Close'], mode='markers', marker=dict(symbol='star', size=12, color=color, line=dict(width=2, color='DarkSlateGrey')), name=symbol + ' dividend'))
+            # Plot dividend stars
+            fig.add_trace(go.Scatter(
+                x=div_dates,
+                y=prices.loc[div_dates, 'Close'],
+                mode='markers+text',
+                marker=dict(
+                    symbol='star',
+                    size=12,
+                    color=color,
+                    line=dict(width=2, color='DarkSlateGrey')
+                ),
+                text=prices.loc[div_dates, 'Close'].round(2),
+                textposition='top center',
+                name=symbol + ' dividend')
+            )
             st.plotly_chart(fig)
 
             # Display the DataFrame with the dividend dates and closing price on those dates
