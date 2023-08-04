@@ -155,7 +155,7 @@ def main():
     if params is None:
         return
 
-    period, symbols, new_symbol, search_button, color = params
+    period, symbols, new_symbol, search_button, color, weeks = params
 
     # If 'Search Now' is clicked, add the new symbol to the symbols list
     if search_button and new_symbol:
