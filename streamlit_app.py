@@ -111,17 +111,17 @@ def perform_analysis(symbol, data, color, new_df):
               y_line.append(prices.loc[div_dates[i], 'Close']) 
               y_line.append(prices.loc[div_dates[i+1], 'Close'])
 
-            # Check if the next day's price is up or down
-            next_day_prices = prices.loc[div_dates[i+1]]
-            up_down = 'green' if next_day_prices > prices.loc[div_dates[i]] else 'red'
+            # # Check if the next day's price is up or down
+            # next_day_prices = prices.loc[div_dates[i+1]]
+            # up_down = 'green' if next_day_prices > prices.loc[div_dates[i]] else 'red'
 
-            fig.add_trace(go.Scatter(
-              x=div_dates[i+1],
-              y=next_day_prices,
-              mode='markers',
-              marker=dict(symbol='triangle', size=12, color=up_down),
-              showlegend=False
-            ))
+            # fig.add_trace(go.Scatter(
+            #   x=div_dates[i+1],
+            #   y=next_day_prices,
+            #   mode='markers',
+            #   marker=dict(symbol='triangle', size=12, color=up_down),
+            #   showlegend=False
+            # ))
 
             
             # Plot connecting line
