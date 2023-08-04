@@ -134,34 +134,38 @@ def days_to_reach(prices, target):
         return np.nan
     return idx
 
-
 def analyze_dividends(symbol, prices, dividends):
     results = days_to_reach_targets(prices, dividends)
+    
+    st.write(results)  # Inspect results dataframe
 
     # Check index is set properly
     results.set_index('Date', inplace=True)
 
-    # Filter dividend dates with dividends greater than 0
-    div_dates = dividends[dividends > 0].index
+    st.write(results.head())
 
-    # Calculate 50% higher closing price dates and values
-    results['Dividend Paid'] = dividends[dividends > 0]
-    results['Closing Price on Dividend Day'] = prices.loc[div_dates, 'Close']
-    results['50% Higher Closing Price'] = prices.loc[div_dates, 'Close'] * 1.5
-    results['Date of 50% Increase'] = pd.to_datetime(np.nan)
+    div_dates = dividends[dividends > 0].index.drop_duplicates()  # Keep only unique dividend payment dates with dividends greater than 0
 
-    # Calculate days to reach 50% higher closing price
+    if not div_dates.empty:
+        div_dates_list = div_dates.tolist()  # Convert div_dates Series to a list of dates
+        results['Closing Price on Dividend Day'] = prices.loc[div_dates_list, 'Close']
+
+    # Calculate 50% increase dates
+    results['50% Increase Date'] = np.nan
     for idx, row in results.iterrows():
-        start_date = idx
-        end_date = results.loc[idx, 'Date of 50% Increase']
+        if not np.isnan(row['Days to 50%']):
+            date_50_percent_increase = idx + pd.Timedelta(days=row['Days to 50%'])
+            results.at[idx, '50% Increase Date'] = date_50_percent_increase
 
-        if np.isnan(end_date):
-            days_to_50_percent = days_to_reach(prices[start_date:], row['50% Higher Closing Price'])
-            if not np.isnan(days_to_50_percent):
-                end_date = start_date + pd.Timedelta(days=days_to_50_percent)
-                results.at[idx, 'Date of 50% Increase'] = end_date
+    # Calculate closing price on 50% increase date
+    results['Closing Price on 50% Increase Date'] = results['50% Increase Date'].map(lambda date: prices.loc[date, 'Close'] if not pd.isnull(date) else np.nan)
 
-    st.write(results)  # inspect results dataframe
+    st.dataframe(results)
+
+    # Plot results
+    fig = px.line(results, y=['Closing Price on Dividend Day', 'Closing Price on 50% Increase Date'])
+    fig.update_layout(title=f"{symbol} Days to Reach Target")
+    st.plotly_chart(fig)
 
     
 def main():
