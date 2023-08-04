@@ -180,7 +180,7 @@ def main():
     # Displaying the first 5 rows for each stock in the DataFrame
     for symbol, df in data.items():
         st.subheader(symbol)
-        st.write(df)
+        st.write(df.head())
 
      # Create a new DataFrame 'new_df' with specified columns from ticker.info
     new_df_data = []
