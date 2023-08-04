@@ -170,8 +170,10 @@ def perform_analysis(symbol, data, color, new_df):
             
             # Get 10 day prices
             ten_days = pd.Timedelta(days=10)
-            post_dividend_prices['Price 10 Days Later'] = prices.shift(-ten_days).nearest(div_dates).loc[div_dates, 'Close'] 
-            
+            try:
+              post_dividend_prices['Price 10 Days Later'] = prices.shift(-ten_days)...
+            except KeyError as e:
+              print("Error getting 10 day prices:", e)
             # Display 
             st.write("10 Day Post Dividend Prices:")
             st.write(post_dividend_prices)
