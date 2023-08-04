@@ -98,40 +98,6 @@ def perform_analysis(symbol, data, color, new_df):
             st.write("No dividend data available for this stock.")
     else:
         st.write("No dividend data available for this stock.")
-
-
-    #         quote_data, results = calculate_dividend_metrics(divs, prices)
-    #         st.write("Dividend Targets:") 
-    #         st.write(results)
-        
-    #     else:
-    #         st.write("No dividend data")
-      
-    #     st.plotly_chart(fig)
-
-    #     # Display the DataFrame with the dividend dates and closing price on those dates
-    #     div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
-     
-    #     # Loop through each dividend date and add rows from new_df for that date
-    #     for date in div_dates_with_prices.index:
-    #         symbol_row = new_df[new_df['symbol'] == symbol]
-    #         symbol_row['date'] = date
-    #         div_dates_with_prices = pd.concat([div_dates_with_prices, symbol_row], axis=0)
-
-    #     st.write("Dividend Dates with Closing Prices, Price Targets, and Analyst Targets:")
-    #     st.write(div_dates_with_prices)
-
-    #     # Add a title to the div/date chart
-    #     div_chart_title = f'Dividends Over Time for {symbol}'
-    #     plot_dividends(divs, color, title=div_chart_title)
-
-    #     show_dividend_targets(divs, prices)
-    #     quote_data, results = calculate_dividend_metrics(divs, prices)
-    #     st.write("Dividend Metrics:")
-    #     st.write(pd.DataFrame(results, columns=["Year", "To Reach 50%", "To Reach 75%", "To Reach 100%"]))
-    # else:
-    #     st.write("No dividend data available for this stock.")
-
     
 def plot_dividends(divs, color, title=None):
     fig = go.Figure()
@@ -146,37 +112,29 @@ def get_dividend_for_date(div_data, date):
             return div
     return None
 
+def days_to_reach(prices, target):
+  return np.argmax(prices >= target)
 
-# Modified dividend metrics function
 def calculate_dividend_metrics(divs, prices):
 
-    # Assume 'days_to_reach' calculates the number of days required to reach a target price
-    def days_to_reach(prices, target):
-        return np.argmax(prices >= target)
-
-    # Assume 'mean' computes the average of a list of values
-    def mean(lst):
-        return sum(lst) / len(lst)
-
-    clean_prices = prices.dropna().values
-    high_prices = [clean_prices[max(i-365, 0):i] for i in range(1, len(clean_prices))]
-
-    results = []
-    for date, div in divs.iterrows():
-        target_prices = [div * (1 + target) for target in TARGETS]
-        days_to_targets = [days_to_reach(hp, tp) for hp, tp in zip(high_prices, target_prices)]
-        averages = [mean(col) for col in zip(*days_to_targets)]
-
-        result = [date.year, *averages]
-        results.append(result)
+  clean_prices = prices.dropna().values
+  high_prices = [clean_prices[max(i-365, 0):i] for i in range(1, len(clean_prices))]
   
-    return results
+  results = []
+  for date, div in divs.iterrows():
+    target_prices = [div * (1 + target) for target in TARGETS]
+    days_to_targets = [days_to_reach(hp, tp) for hp, tp in zip(high_prices, target_prices)]
+    
+    result = [date, *days_to_targets]
+    results.append(result)
+
+  return results
 
 # Simplified show targets  
 def show_dividend_targets(divs, prices):
   results = calculate_dividend_metrics(divs, prices)
   targets = [f"{target*100}%" for target in TARGETS]
-  df = pd.DataFrame(results, columns=["Year", *targets])
+  df = pd.DataFrame(results, columns=["Date", "Days to 50%", "Days to 75%", "Days to 100%"])
   st.write(df)
 
 def main():
