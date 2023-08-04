@@ -1,31 +1,48 @@
-You're right, my previous README section on implementation does not look quite right. Here is an updated implementation section with clearer formatting for the key components:
+# Dividend Stock Analysis App
 
-## Implementation
+This is a Streamlit app for analyzing dividend stocks. 
 
-The key components of the app are:
+## Overview
 
-- `app.py`: Main Streamlit app code. This contains the UI and calls the analysis functions.
+The app allows users to:
 
-- `analysis.py`: Contains the functions to fetch data and perform analysis.
+- Select dividend paying stocks
+- View historical price and dividend data
+- Analyze stock prices around dividend payment dates
 
-    - `get_data()`: Fetches dividend and price history data from Yahoo Finance.
+## Usage
 
-    - `analyze()`: Analyzes each year's dividends and calculates recovery days.
+The app has several user inputs on the sidebar:
 
-- `requirements.txt`: Lists the Python package dependencies for recreating the environment.
+- Stock Symbol(s) - Enter or select stock tickers
+- Time Period - Select how far back to get historical data
+- Plot Color - Pick color for the interactive plots 
 
-The analysis works by:
+After entering selections, click "Search Now" to load data and run analysis.
 
-1. Fetching dividend and price history data from Yahoo Finance API using `get_data()`.
+Key features:
 
-2. Filtering the dividends to those paid each year. 
+- Interactive price chart with dividend payment markers
+- Dividend dates and amounts table
+- Prices before and after dividend payments
 
-3. Getting the price history around each dividend date.
+## Running Locally
 
-4. Calculating the days for the stock to recover 50%, 75%, and 100% of the dividend amount. 
+To run the app locally:
 
-5. Averaging the recovery days for each year.
+1. Clone this repo
+2. Create and activate a virtual environment 
+3. Install requirements from requirements.txt
+4. Run `streamlit run app.py`
 
-The results are then output in the Streamlit app `app.py` for the user.
+## Resources
 
-Let me know if this provides a clearer explanation of the key components and implementation!
+This app uses:
+
+- Streamlit for the UI
+- yfinance for stock data
+- Pandas and Plotly for analysis and visualization
+
+## Contributing
+
+Contributions are welcome! Open an issue or PR if you would like to help add features or fix bugs.
