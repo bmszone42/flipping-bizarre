@@ -115,20 +115,20 @@ def days_to_reach(prices, target):
   return np.argmax(prices >= target)
 
 def calculate_dividend_metrics(divs, prices):
-
-  clean_prices = prices.dropna().values
-  high_prices = [clean_prices[max(i-365, 0):i] for i in range(1, len(clean_prices))]
+    clean_prices = prices.dropna().values
+    high_prices = [clean_prices[max(i-365, 0):i] for i in range(1, len(clean_prices))]
   
-  results = []
-  for date, div in divs.iterrows():
-    target_prices = [div * (1 + target) for target in TARGETS]
-    days_to_targets = [days_to_reach(hp, tp) for hp, tp in zip(high_prices, target_prices)]
+    results = []
+    for date, div in divs.iterrows():
+        if div['Dividends'] > 0:
+            target_prices = [div * (1 + target) for target in TARGETS]
+            days_to_targets = [days_to_reach(hp, tp) for hp, tp in zip(high_prices, target_prices)]
 
-    # Format the date as string before appending to the results list
-    result = [date.strftime('%Y-%m-%d'), *days_to_targets]
-    results.append(result)
+            # Format the date as string before appending to the results list
+            result = [date.strftime('%Y-%m-%d'), *days_to_targets]
+            results.append(result)
 
-  return results
+    return results
 
 # Simplified show targets  
 def show_dividend_targets(divs, prices):
