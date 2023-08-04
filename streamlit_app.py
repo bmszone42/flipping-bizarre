@@ -127,16 +127,13 @@ def perform_analysis(symbol, data, color, new_df):
             st.write("Dividend Dates with Closing Prices:")
             st.write(div_dates_with_prices)
 
-            # After sorting dividend dates
+            # Sort the DataFrame by date
             div_dates_with_prices = div_dates_with_prices.sort_index()
             
             # Add columns for price changes
             for days in [30, 60, 90]:
                 col_name = f'Price Change in {days} Days'
-                div_dates_with_prices[col_name] = (div_dates_with_prices['Close'].pct_change(periods=-days) * 100)
-            
-            # Drop rows with NaN values in price change columns
-            div_dates_with_prices.dropna(subset=[f'Price Change in {days} Days' for days in [30, 60, 90]], inplace=True)
+                div_dates_with_prices[col_name] = (div_dates_with_prices['Close'].shift(-days) - div_dates_with_prices['Close']) / div_dates_with_prices['Close']
             
             # Add formatted date column
             div_dates_with_prices['Date'] = div_dates_with_prices.index.strftime('%Y-%m-%d')
@@ -145,8 +142,6 @@ def perform_analysis(symbol, data, color, new_df):
             div_dates_with_prices = div_dates_with_prices[['Date', 'Close', 'Dividends', 'Price Change in 30 Days', 'Price Change in 60 Days', 'Price Change in 90 Days']]
             
             st.write(div_dates_with_prices)
-            
-
             
         else:
             st.write("No dividend data available for this stock.")
