@@ -116,11 +116,6 @@ def perform_analysis(symbol, data, color, new_df, weeks):
             st.plotly_chart(fig)
 
             div_dates = div_dates.tz_convert(prices.index.tz)
-
-            # div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
-            # st.write("Dividend Dates with Closing Prices:")
-            # st.write(div_dates_with_prices)
-
             dates_with_prices = pd.DataFrame()
             dates_with_prices['Dividend Date'] = div_dates
             dates_with_prices['Dividend Date'] = dates_with_prices['Dividend Date'].dt.strftime('%Y-%m-%d')
@@ -141,7 +136,7 @@ def perform_analysis(symbol, data, color, new_df, weeks):
                 dates_with_prices[f'Price at {week} Weeks'] = prices_shifted.loc[div_dates, 'Close'].values.round(2)
                 dates_with_prices[f'Change at {week} Weeks (%)'] = ((dates_with_prices[f'Price at {week} Weeks'] - dates_with_prices['Closing Price']) / dates_with_prices['Closing Price'] * 100).round(2)
 
-            st.write("Dividend Dates with More Closing Prices:")
+            st.write(f"Dividend Dates for {symbol} with Closing Prices:")
             st.write(dates_with_prices)
 
         else:
