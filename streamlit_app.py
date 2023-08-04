@@ -59,6 +59,17 @@ def setup_streamlit():
     search_button = st.sidebar.button('Search Now')
 
     return period, symbols, new_symbol, search_button, color
+
+def show_dividend_targets(dividends, prices):
+    targets = [price * (1 + tgt) for tgt in TARGETS]
+
+    for target in targets:
+        days_to_target = days_to_reach(prices, target)
+        if not np.isnan(days_to_target):
+            st.write(f"Days to {target:.2f}: {days_to_target}")
+        else:
+            st.write(f"Target {target:.2f} not reached.")
+
     
 def perform_analysis(symbol, data, color, new_df):
     st.subheader(symbol)
