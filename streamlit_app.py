@@ -136,15 +136,18 @@ def days_to_reach(prices, target):
 
 def analyze_dividends(symbol, prices, dividends):
 
-  # Reindex prices to match dividends
-  prices = prices.reindex(dividends.index) 
-  
-  # Fill missing values  
-  prices = prices.fillna(method='ffill')
+  # Reset index on prices
+  prices = prices.reset_index(drop=True)
+
+  # Reindex dividends to match prices
+  dividends = dividends.reindex(prices.index)
+
+  # Fill missing values
+  dividends = dividends.fillna(method='ffill')
 
   results = days_to_reach_targets(prices, dividends)
 
-  # Rest of code to calculate results
+  # Calculate results dataframe
 
   div_dates = dividends[dividends > 0].index.drop_duplicates()
 
@@ -152,11 +155,14 @@ def analyze_dividends(symbol, prices, dividends):
 
     closing_prices = []
 
-    for date in div_dates:
-      closing_price = prices.at[date, 'Close'] 
+    # Use index position rather than date
+    for i, date in enumerate(div_dates):
+      closing_price = prices.at[i, 'Close']
       closing_prices.append(closing_price)
 
     results['Closing Price on Dividend Day'] = closing_prices
+
+  # Rest of analyze_dividends code
 
     # Calculate 50% increase dates
     results['50% Increase Date'] = np.nan
