@@ -135,10 +135,10 @@ def perform_analysis(symbol, data, color, new_df):
             
             st.plotly_chart(fig)
 
-            # # Display the DataFrame with the dividend dates and closing price on those dates
-            # div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
-            # st.write("Dividend Dates with Closing Prices:")
-            # st.write(div_dates_with_prices)
+            # Display the DataFrame with the dividend dates and closing price on those dates
+            div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
+            st.write("Dividend Dates with Closing Prices:")
+            st.write(div_dates_with_prices)
 
         else:
             st.write("No dividend data available for this stock.")
