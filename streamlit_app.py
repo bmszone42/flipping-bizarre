@@ -155,24 +155,34 @@ def days_to_reach(prices, target):
     return idx
 
 
-def analyze_dividends(symbol, prices, divs):
+def analyze_dividends(symbol, prices, dividends):
+    results = days_to_reach_targets(prices, dividends)
 
-  results = days_to_reach_targets(prices, divs)
-    
-  st.write(results) # inspect results dataframe
+    # Check index is set properly
+    results.set_index('Date', inplace=True)
 
-  # Check index is set properly
-  results.set_index('Date', inplace=True)
+    # Filter dividend dates with dividends greater than 0
+    div_dates = dividends[dividends > 0].index
 
-  st.write(results.head())
+    # Calculate 50% higher closing price dates and values
+    results['Dividend Paid'] = dividends[dividends > 0]
+    results['Closing Price on Dividend Day'] = prices.loc[div_dates, 'Close']
+    results['50% Higher Closing Price'] = prices.loc[div_dates, 'Close'] * 1.5
+    results['Date of 50% Increase'] = pd.to_datetime(np.nan)
 
-  # Plot results
-  fig = px.line(results) 
-  fig.update_layout(title=f"{symbol} Days to Reach Target")
-  
-  st.plotly_chart(fig)
+    # Calculate days to reach 50% higher closing price
+    for idx, row in results.iterrows():
+        start_date = idx
+        end_date = results.loc[idx, 'Date of 50% Increase']
 
-  st.dataframe(results)
+        if np.isnan(end_date):
+            days_to_50_percent = days_to_reach(prices[start_date:], row['50% Higher Closing Price'])
+            if not np.isnan(days_to_50_percent):
+                end_date = start_date + pd.Timedelta(days=days_to_50_percent)
+                results.at[idx, 'Date of 50% Increase'] = end_date
+
+    st.write(results)  # inspect results dataframe
+
     
 def main():
     params = setup_streamlit()
