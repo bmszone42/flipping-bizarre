@@ -120,13 +120,25 @@ def perform_analysis(symbol, data, color, new_df):
               
               y_line.append(prices.loc[div_dates[i], 'Close']) 
               y_line.append(prices.loc[div_dates[i+1], 'Close'])
+
+                # Calculate % increase
+              pct_incr = (y_line[i+1] - y_line[i]) / y_line[i] * 100
+              
+              # Display % increase text
+              fig.add_trace(go.Scatter(
+                x=[(x_line[i] + x_line[i+1]) / 2], 
+                y=[np.mean(y_line[i:i+2])],
+                text=['{:.2f}%'.format(pct_incr)],
+                mode='text',
+                showlegend=False
+              ))
             
             # Plot connecting line
             fig.add_trace(go.Scatter(
               x=x_line,
               y=y_line,
               mode='lines',
-              line=dict(color=color, width=2),
+              line=dict(color='white', width=2),
               showlegend=False
             ))
             st.plotly_chart(fig)
