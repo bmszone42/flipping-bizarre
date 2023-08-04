@@ -113,6 +113,11 @@ def get_dividend_for_date(div_data, date):
 
 # Calculate days to reach each target  
 def days_to_reach_targets(prices, dividends):
+    print("Prices DataFrame:")
+    print(prices.head())
+
+    print("Dividends DataFrame:")
+    print(dividends.head())
 
   results = []
 
@@ -138,11 +143,13 @@ def days_to_reach_targets(prices, dividends):
 
 # Helper function    
 def days_to_reach(prices, target):
-  # Returns NaN if target not reached
-  idx = np.argmax(prices >= target) 
-  if idx == 0 and prices[0] < target:
-    return np.nan
-  return idx
+    # Returns NaN if target not reached
+    idx = np.argmax(prices >= target)
+    if idx == 0 and prices[0] < target:
+        print(f"Target {target} not reached in prices.")
+        return np.nan
+    return idx
+
 
 def analyze_dividends(symbol, prices, dividends):
 
