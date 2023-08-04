@@ -99,10 +99,6 @@ def perform_analysis(symbol, data, color, new_df):
             # Add a title to the div/date chart
             div_chart_title = f'Dividends Over Time for {symbol}'
             plot_dividends(divs, color, title=div_chart_title)
-
-            # Show dividend metrics
-            st.write("Dividend Metrics:")
-            show_dividend_targets(divs, prices)
             
         else:
             st.write("No dividend data available for this stock.")
@@ -123,20 +119,20 @@ def get_dividend_for_date(div_data, date):
     return None
 
 # Calculate days to reach each target  
-def days_to_reach_targets(prices, dividends):
+def days_to_reach_targets(prices, divs):
     print("Prices DataFrame:")
     print(prices.head())
 
     print("Dividends DataFrame:")
-    print(dividends.head())
+    print(divs.head())
 
     results = []
 
     # Match dividend dates to prices
-    prices = prices.reindex(dividends.index)
+    prices = prices.reindex(divs.index)
     prices = prices.fillna(method='ffill')
 
-    for date, div in dividends.items():
+    for date, div in divs.items():
         if div > 0:
             price = prices.loc[date]
             targets = [price * (1 + tgt) for tgt in TARGETS]
@@ -159,9 +155,9 @@ def days_to_reach(prices, target):
     return idx
 
 
-def analyze_dividends(symbol, prices, dividends):
+def analyze_dividends(symbol, prices, divs):
 
-  results = days_to_reach_targets(prices, dividends)
+  results = days_to_reach_targets(prices, divs)
     
   st.write(results) # inspect results dataframe
 
