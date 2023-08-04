@@ -89,6 +89,36 @@ def perform_analysis(symbol, data, color, new_df):
             # Add stars to the price graph for dividend payment dates with dividends greater than 0
             fig.add_trace(go.Scatter(x=div_dates, y=prices.loc[div_dates, 'Close'], mode='markers', marker=dict(symbol='star', size=12, color=color, line=dict(width=2, color='DarkSlateGrey')), name=symbol + ' dividend'))
 
+            # Loop through dividend dates 
+            for date in div_dates:
+                
+                # Get dividend amount
+                div = divs.loc[date, 'Dividends']
+                
+                # Get price on dividend date
+                price = prices.loc[date, 'Close']
+                
+                # Calculate 50% target price 
+                target = price * 1.5
+                
+                # Find date target reached within 30 days
+                mask = (prices >= target) & (prices.index <= date + pd.Timedelta(days=DAYS_TO_TARGET))
+                target_date = prices.loc[mask].index.min()
+
+                if not pd.isnull(target_date):
+
+                    # Add triangle marker
+                    fig.add_trace(go.Scatter(
+                        x = [target_date],
+                        y = [prices.loc[target_date]],
+                        mode='markers',
+                        marker=dict(
+                            symbol='triangle-up',
+                            size=10, 
+                            color='green'
+                        )
+                    ))
+
             st.plotly_chart(fig)
 
             # Display the DataFrame with the dividend dates and closing price on those dates
