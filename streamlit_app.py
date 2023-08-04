@@ -113,34 +113,43 @@ def perform_analysis(symbol, data, color, new_df):
             x_line = []
             y_line = []
             
-            # Loop through dividend dates 
+            # Loop through dividend dates
             for i in range(len(div_dates)-1):
-              x_line.append(div_dates[i])
+            
+              # Append dates
+              x_line.append(div_dates[i]) 
               x_line.append(div_dates[i+1])
-              
-              y_line.append(prices.loc[div_dates[i], 'Close']) 
+            
+              # Append prices 
+              y_line.append(prices.loc[div_dates[i], 'Close'])
               y_line.append(prices.loc[div_dates[i+1], 'Close'])
-
-                # Calculate % increase
+            
+              # Calculate % increase
               pct_incr = (y_line[i+1] - y_line[i]) / y_line[i] * 100
-              
-              # Display % increase text
+            
+              # Text x position 
+              x_text = (div_dates[i] + div_dates[i+1]) / 2
+            
+              # Text y position - adjust so no overlap with line
+              y_text = np.mean(y_line[i:i+2]) + 5
+            
+              # Add text trace
               fig.add_trace(go.Scatter(
-                x=[(x_line[i] + x_line[i+1]) / 2], 
-                y=[np.mean(y_line[i:i+2])],
-                text=['{:.2f}%'.format(pct_incr)],
+                x=[x_text],
+                y=[y_text],
+                text=['{:.2f}% Increase'.format(pct_incr)], 
                 mode='text',
                 showlegend=False
               ))
             
-            # Plot connecting line
+            # Add line trace  
             fig.add_trace(go.Scatter(
-              x=x_line,
-              y=y_line,
+              x=x_line, y=y_line,
               mode='lines',
               line=dict(color='white', width=2),
               showlegend=False
             ))
+
             st.plotly_chart(fig)
 
             # Display the DataFrame with the dividend dates and closing price on those dates
