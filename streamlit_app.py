@@ -135,7 +135,6 @@ def days_to_reach(prices, target):
     return idx
 
 def analyze_dividends(symbol, prices, dividends):
-    def analyze_dividends(symbol, prices, dividends):
 
   # Reindex prices to match dividends
   prices = prices.reindex(dividends.index) 
