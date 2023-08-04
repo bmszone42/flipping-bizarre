@@ -136,24 +136,66 @@ def perform_analysis(symbol, data, color, new_df):
             # st.write("Dividend Dates with Closing Prices:")
             # st.write(div_dates_with_prices)
 
-            div_dates_with_prices = pd.DataFrame()
-            div_dates_with_prices['Dividend Date'] = div_dates
-            div_dates_with_prices['Dividend Date'] = div_dates_with_prices['Dividend Date'].dt.strftime('%Y-%m-%d')
+            # div_dates_with_prices = pd.DataFrame()
+            # div_dates_with_prices['Dividend Date'] = div_dates
+            # div_dates_with_prices['Dividend Date'] = div_dates_with_prices['Dividend Date'].dt.strftime('%Y-%m-%d')
 
-            # Set Dividend Date as index
-            div_dates_with_prices = div_dates_with_prices.set_index('Dividend Date')
-            div_dates_with_prices['Dividend Amount'] = divs.loc[div_dates, 'Dividends'].values
-            div_dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'].values
-            div_dates_with_prices['Price Next Day'] = prices.loc[div_dates + pd.Timedelta(days=1), 'Close'].values
+            # # Set Dividend Date as index
+            # div_dates_with_prices = div_dates_with_prices.set_index('Dividend Date')
+            # div_dates_with_prices['Dividend Amount'] = divs.loc[div_dates, 'Dividends'].values
+            # div_dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'].values
+            # div_dates_with_prices['Price Next Day'] = prices.loc[div_dates + pd.Timedelta(days=1), 'Close'].values
 
-            # Price 5 days after
-            div_dates_with_prices['Price +5 Days'] = prices.loc[div_dates + pd.Timedelta(days=5), 'Close'].values
+            # # Price 5 days after
+            # div_dates_with_prices['Price +5 Days'] = prices.loc[div_dates + pd.Timedelta(days=5), 'Close'].values
             
-            # Price 10 days after 
-            div_dates_with_prices['Price +10 Days'] = prices.loc[div_dates + pd.Timedelta(days=10), 'Close'].values 
+            # # Price 10 days after 
+            # div_dates_with_prices['Price +10 Days'] = prices.loc[div_dates + pd.Timedelta(days=10), 'Close'].values 
             
-            # Price 15 days after
-            div_dates_with_prices['Price +15 Days'] = prices.loc[div_dates + pd.Timedelta(days=15), 'Close'].values
+            # # Price 15 days after
+            # div_dates_with_prices['Price +15 Days'] = prices.loc[div_dates + pd.Timedelta(days=15), 'Close'].values
+            # Create empty DataFrame
+            div_dates_with_prices = pd.DataFrame() 
+            
+            # Extract dividend dates 
+            div_dates = divs[divs['Dividends'] > 0].index.drop_duplicates()
+            
+            # Reformat dividend dates
+            div_dates = div_dates.strftime('%Y-%m-%d') 
+            
+            # Set dividend dates as index
+            div_dates_with_prices.index = div_dates
+            
+            # Extract dividend, price data into columns
+            try:
+              div_dates_with_prices['Dividend Amount'] = divs.loc[div_dates, 'Dividends'].values
+            except KeyError as e:
+              print("Error extracting dividends:", e)
+            
+            try:  
+              div_dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'].values 
+            except KeyError as e:
+              print("Error extracting closing price:", e)   
+            
+            # Use frequency to shift dates  
+            one_day = pd.Timedelta(days=1)
+            
+            try:
+              div_dates_with_prices['Price Next Day'] = prices.loc[div_dates + one_day, 'Close'].values
+            except KeyError as e:
+              print("Error extracting next day price:", e)
+            
+            # Add columns for prices on different days  
+            for days in [5, 10, 15]:
+              try:
+                label = f'Price +{days} Days'
+                shift = pd.Timedelta(days=days)
+                div_dates_with_prices[label] = prices.loc[div_dates + shift, 'Close'].values
+              except KeyError as e:
+                 print(f"Error extracting price for {days} days:", e)
+            
+            print(div_dates_with_prices)
+
             st.write("Dividend Dates with Closing Prices:")
             st.write(div_dates_with_prices)
 
