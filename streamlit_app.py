@@ -32,7 +32,6 @@ def download_data(symbols, period='max'):
             st.error(f"Failed to download data for symbol: {symbol}. Please check if the symbol is correct.")
     return data
 
-
 # Extracting the dividend data
 def get_dividends(df):
     if 'Dividends' in df.columns:
@@ -124,8 +123,9 @@ def calculate_dividend_metrics(divs, prices):
   for date, div in divs.iterrows():
     target_prices = [div * (1 + target) for target in TARGETS]
     days_to_targets = [days_to_reach(hp, tp) for hp, tp in zip(high_prices, target_prices)]
-    
-    result = [date, *days_to_targets]
+
+    # Format the date as string before appending to the results list
+    result = [date.strftime('%Y-%m-%d'), *days_to_targets]
     results.append(result)
 
   return results
