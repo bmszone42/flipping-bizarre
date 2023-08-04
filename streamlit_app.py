@@ -147,7 +147,18 @@ def analyze_dividends(symbol, prices, dividends):
     div_dates = dividends[dividends > 0].index.drop_duplicates()  # Keep only unique dividend payment dates with dividends greater than 0
 
     if not div_dates.empty:
-        results['Closing Price on Dividend Day'] = prices.loc[div_dates, 'Close']
+
+        # FIX: Loop through dates and append prices to list
+        closing_prices = []
+        for date in div_dates:
+            closing_price = prices.loc[date, 'Close']
+            closing_prices.append(closing_price)
+
+        # Assign list of prices instead of indexing with list of dates
+        results['Closing Price on Dividend Day'] = closing_prices
+
+    # if not div_dates.empty:
+    #     results['Closing Price on Dividend Day'] = prices.loc[div_dates, 'Close']
 
     # Calculate 50% increase dates
     results['50% Increase Date'] = np.nan
