@@ -42,7 +42,7 @@ def get_dividends(df):
 def setup_streamlit():
     current_time = datetime.now().strftime("%H:%M:%S")
     st.markdown(f"""
-    # <span style='color:green'> :detective: :chart_with_upwards_trend: **Dividend Detective** :moneybag: :mag: </span>
+    # <span style='color:green'> :chart_with_upwards_trend: **Dividend Detective** :moneybag: :mag: </span>
     Uncover the mysteries of stock dividends and their impact on price performance!
     ## Updated at {current_time}
     """, unsafe_allow_html=True)
