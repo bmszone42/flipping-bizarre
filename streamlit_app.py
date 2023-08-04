@@ -156,7 +156,7 @@ def perform_analysis(symbol, data, color, new_df):
             dividend_changes['Date'] = dividend_changes.index.strftime('%Y-%m-%d')
             
             # Display the DataFrame with dividend dates, closing prices, and prices after dividends
-            st.write('Dividend Changes Over time'
+            st.write('Dividend Changes Over time')
             st.table(dividend_changes)
 
         else:
