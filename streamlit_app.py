@@ -60,16 +60,6 @@ def setup_streamlit():
 
     return period, symbols, new_symbol, search_button, color
 
-def show_dividend_targets(dividends, prices):
-    targets = [price * (1 + tgt) for tgt in TARGETS]
-
-    for target in targets:
-        days_to_target = days_to_reach(prices, target)
-        if not np.isnan(days_to_target):
-            st.write(f"Days to {target:.2f}: {days_to_target}")
-        else:
-            st.write(f"Target {target:.2f} not reached.")
-
     
 def perform_analysis(symbol, data, color, new_df):
     st.subheader(symbol)
@@ -136,92 +126,11 @@ def perform_analysis(symbol, data, color, new_df):
             div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
             st.write("Dividend Dates with Closing Prices:")
             st.write(div_dates_with_prices)
-
-            # Add a title to the div/date chart
-            div_chart_title = f'Dividends Over Time for {symbol}'
-            plot_dividends(divs, color, title=div_chart_title)
             
         else:
             st.write("No dividend data available for this stock.")
     else:
         st.write("No dividend data available for this stock.")
-
-# Calculate days to reach each target  
-def days_to_reach_targets(prices, divs):
-    results = []
-
-    # Match dividend dates to prices
-    prices = prices.reindex(divs.index)
-    prices = prices.fillna(method='ffill')
-
-    for date, div in divs.items():
-        if div > 0:
-            price = prices.loc[date]
-            targets = [price * (1 + tgt) for tgt in TARGETS]
-
-            days = [days_to_reach(prices.loc[date:], tgt) for tgt in targets]
-
-            result = [date] + days
-            results.append(result)
-
-    return pd.DataFrame(results, columns=["Date", "Days to 50%", "Days to 75%", "Days to 100%"])
-
-# Helper function    
-def days_to_reach(prices, target):
-    # Returns NaN if target not reached
-    idx = np.argmax(prices >= target)
-    if idx == 0 and prices[0] < target:
-        print(f"Target {target} not reached in prices.")
-        return np.nan
-    return idx
-
-def analyze_dividends(symbol, prices, dividends):
-
-  # Reset index on prices
-  prices = prices.reset_index(drop=True)
-
-  # Reindex dividends to match prices
-  dividends = dividends.reindex(prices.index)
-
-  # Fill missing values
-  dividends = dividends.fillna(method='ffill')
-
-  results = days_to_reach_targets(prices, dividends)
-
-  # Calculate results dataframe
-
-  div_dates = dividends[dividends > 0].index.drop_duplicates()
-
-  if not div_dates.empty:
-
-    closing_prices = []
-
-    # Use index position rather than date
-    for i, date in enumerate(div_dates):
-      closing_price = prices.at[i, 'Close']
-      closing_prices.append(closing_price)
-
-    results['Closing Price on Dividend Day'] = closing_prices
-
-  # Rest of analyze_dividends code
-
-    # Calculate 50% increase dates
-    results['50% Increase Date'] = np.nan
-    for idx, row in results.iterrows():
-        if not np.isnan(row['Days to 50%']):
-            date_50_percent_increase = idx + pd.Timedelta(days=row['Days to 50%'])
-            results.at[idx, '50% Increase Date'] = date_50_percent_increase
-
-    # Calculate closing price on 50% increase date
-    results['Closing Price on 50% Increase Date'] = results['50% Increase Date'].map(lambda date: prices.loc[date, 'Close'] if not pd.isnull(date) else np.nan)
-
-    st.dataframe(results)
-
-    # Plot results
-    fig = px.line(results, y=['Closing Price on Dividend Day', 'Closing Price on 50% Increase Date'])
-    fig.update_layout(title=f"{symbol} Days to Reach Target")
-    st.plotly_chart(fig)
-
     
 def main():
     params = setup_streamlit()
@@ -275,13 +184,6 @@ def main():
         except Exception as e:
             print("Error occurred in perform_analysis:", e)  # Debug print statement
 
-      # Analyze each symbol
-    for symbol in symbols:
-  
-        prices = data[symbol]['Close']
-        dividends = data[symbol]['Dividends']
-        st.write('Dividend Analysis')
-        analyze_dividends(symbol, prices, dividends)
 
     st.header('Combined view')
     combined = pd.concat([data[symbol][f'{symbol}_Dividends'] for symbol in symbols], axis=1)
