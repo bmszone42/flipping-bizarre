@@ -144,16 +144,17 @@ def perform_analysis(symbol, data, color, new_df):
                         price_after_dividend = np.nan
                     prices_after_dividends.append(price_after_dividend)
             
-            # Add the prices to the DataFrame
-            div_dates_with_prices['Price 10 Days After'] = prices_after_dividends[:len(div_dates)]
-            div_dates_with_prices['Price 20 Days After'] = prices_after_dividends[len(div_dates):2 * len(div_dates)]
-            div_dates_with_prices['Price 30 Days After'] = prices_after_dividends[2 * len(div_dates):]
+           # Add formatted date column
+            dividend_changes['Date'] = dividend_changes.index.strftime('%Y-%m-%d')
             
+            # Use .loc method to set the values
+            div_dates_with_prices.loc[:, 'Price 10 Days After'] = prices_after_dividends[:len(div_dates_with_prices)]
+            div_dates_with_prices.loc[:, 'Price 20 Days After'] = prices_after_dividends[len(div_dates_with_prices):2 * len(div_dates_with_prices)]
+            div_dates_with_prices.loc[:, 'Price 30 Days After'] = prices_after_dividends[2 * len(div_dates_with_prices):]
+
             # Create a new DataFrame 'dividend_changes' with relevant columns
             dividend_changes = div_dates_with_prices[['Close', 'Dividends', 'Price 10 Days After', 'Price 20 Days After', 'Price 30 Days After']]
-            
-            # Add formatted date column
-            dividend_changes['Date'] = dividend_changes.index.strftime('%Y-%m-%d')
+        
             
             # Display the DataFrame with dividend dates, closing prices, and prices after dividends
             st.write('Dividend Changes Over time')
