@@ -62,8 +62,7 @@ def setup_streamlit():
     search_button = st.sidebar.button('Search Now')
 
     return period, symbols, new_symbol, search_button, color, weeks
-
-    
+  
 def perform_analysis(symbol, data, color, new_df, weeks):
     st.subheader(symbol)
 
@@ -143,8 +142,7 @@ def perform_analysis(symbol, data, color, new_df, weeks):
             st.write("No dividend data available for this stock.")
     else:
         st.write("No dividend data available for this stock.")
-
-    
+  
 def main():
     params = setup_streamlit()
     if params is None:
@@ -187,7 +185,7 @@ def main():
     new_df = pd.DataFrame(new_df_data)
 
     # Display the new DataFrame 
-    st.header('Extra - ticker Data')
+    st.header(f'Ticker Data for {symbol}')
     st.write(new_df)
 
     st.header('Analysis')
