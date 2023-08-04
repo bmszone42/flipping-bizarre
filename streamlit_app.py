@@ -56,7 +56,7 @@ def setup_streamlit():
     color = st.sidebar.selectbox('Select plot color', options=['red', 'green', 'blue', 'purple'], index=0)
 
     # Add a multiselect input for the number of weeks
-    weeks = st.sidebar.multiselect('Weeks to check for price change', options=[1, 2, 3, 4, 5], default=[1, 3, 5])
+    weeks = st.sidebar.multiselect('Weeks to check for price change', options=[1, 2, 3, 4, 5, 6, 7, 8, 9], default=[2, 4, 6])
 
     # Add a 'Search Now' button
     search_button = st.sidebar.button('Search Now')
