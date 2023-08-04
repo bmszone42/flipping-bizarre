@@ -131,23 +131,23 @@ def perform_analysis(symbol, data, color, new_df):
             
             st.plotly_chart(fig)
 
-            # # Display the DataFrame with the dividend dates and closing price on those dates
-            div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
-            st.write("Dividend Dates with Closing Prices:")
-            st.write(div_dates_with_prices)
+            # # # Display the DataFrame with the dividend dates and closing price on those dates
+            # div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
+            # st.write("Dividend Dates with Closing Prices:")
+            # st.write(div_dates_with_prices)
 
-            div_dates_with_prices = pd.DataFrame()
-            div_dates_with_prices['Dividend Date'] = div_dates
-            div_dates_with_prices['Dividend Date'] = div_dates_with_prices['Dividend Date'].dt.strftime('%Y-%m-%d')
+            # div_dates_with_prices = pd.DataFrame()
+            # div_dates_with_prices['Dividend Date'] = div_dates
+            # div_dates_with_prices['Dividend Date'] = div_dates_with_prices['Dividend Date'].dt.strftime('%Y-%m-%d')
 
-            # Set Dividend Date as index
-            div_dates_with_prices = div_dates_with_prices.set_index('Dividend Date')
-            div_dates_with_prices['Dividend Amount'] = divs.loc[div_dates, 'Dividends'].values
-            div_dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'].values
-            div_dates_with_prices['Price Next Day'] = prices.loc[div_dates + pd.Timedelta(days=1), 'Close'].values
+            # # Set Dividend Date as index
+            # div_dates_with_prices = div_dates_with_prices.set_index('Dividend Date')
+            # div_dates_with_prices['Dividend Amount'] = divs.loc[div_dates, 'Dividends'].values
+            # div_dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'].values
+            # div_dates_with_prices['Price Next Day'] = prices.loc[div_dates + pd.Timedelta(days=1), 'Close'].values
 
-            st.write("Dividend Dates with Closing Prices:")
-            st.write(div_dates_with_prices)
+            # st.write("Dividend Dates with Closing Prices:")
+            # st.write(div_dates_with_prices)
 
         else:
             st.write("No dividend data available for this stock.")
@@ -199,6 +199,24 @@ def main():
     # Display the new DataFrame 'new_df'
     st.header('New DataFrame - ticker.info Data')
     st.write(new_df.head())
+
+    # # Display the DataFrame with the dividend dates and closing price on those dates
+    div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
+    st.write("Dividend Dates with Closing Prices:")
+    st.write(div_dates_with_prices)
+
+    div_dates_with_prices = pd.DataFrame()
+    div_dates_with_prices['Dividend Date'] = div_dates
+    div_dates_with_prices['Dividend Date'] = div_dates_with_prices['Dividend Date'].dt.strftime('%Y-%m-%d')
+
+    # Set Dividend Date as index
+    div_dates_with_prices = div_dates_with_prices.set_index('Dividend Date')
+    div_dates_with_prices['Dividend Amount'] = divs.loc[div_dates, 'Dividends'].values
+    div_dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'].values
+    div_dates_with_prices['Price Next Day'] = prices.loc[div_dates + pd.Timedelta(days=1), 'Close'].values
+
+    st.write("Dividend Dates with Closing Prices:")
+    st.write(div_dates_with_prices)
 
     st.header('Analysis')
     for symbol in symbols:
