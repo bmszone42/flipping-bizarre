@@ -79,37 +79,56 @@ def perform_analysis(symbol, data, color, new_df):
             # Add stars to the price graph for dividend payment dates with dividends greater than 0
             fig.add_trace(go.Scatter(x=div_dates, y=prices.loc[div_dates, 'Close'], mode='markers', marker=dict(symbol='star', size=12, color=color, line=dict(width=2, color='DarkSlateGrey')), name=symbol + ' dividend'))
 
-            quote_data, results = calculate_dividend_metrics(divs, prices)
-            st.write("Dividend Targets:") 
-            st.write(results)
-        
+            st.plotly_chart(fig)
+
+            # Display the DataFrame with the dividend dates and closing price on those dates
+            div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
+            st.write("Dividend Dates with Closing Prices:")
+            st.write(div_dates_with_prices)
+
+            # Add a title to the div/date chart
+            div_chart_title = f'Dividends Over Time for {symbol}'
+            plot_dividends(divs, color, title=div_chart_title)
+
+            show_dividend_targets(divs, prices)
+            
         else:
-            st.write("No dividend data")
-      
-        st.plotly_chart(fig)
-
-        # Display the DataFrame with the dividend dates and closing price on those dates
-        div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
-     
-        # Loop through each dividend date and add rows from new_df for that date
-        for date in div_dates_with_prices.index:
-            symbol_row = new_df[new_df['symbol'] == symbol]
-            symbol_row['date'] = date
-            div_dates_with_prices = pd.concat([div_dates_with_prices, symbol_row], axis=0)
-
-        st.write("Dividend Dates with Closing Prices, Price Targets, and Analyst Targets:")
-        st.write(div_dates_with_prices)
-
-        # Add a title to the div/date chart
-        div_chart_title = f'Dividends Over Time for {symbol}'
-        plot_dividends(divs, color, title=div_chart_title)
-
-        show_dividend_targets(divs, prices)
-        quote_data, results = calculate_dividend_metrics(divs, prices)
-        st.write("Dividend Metrics:")
-        st.write(pd.DataFrame(results, columns=["Year", "To Reach 50%", "To Reach 75%", "To Reach 100%"]))
+            st.write("No dividend data available for this stock.")
     else:
         st.write("No dividend data available for this stock.")
+
+
+    #         quote_data, results = calculate_dividend_metrics(divs, prices)
+    #         st.write("Dividend Targets:") 
+    #         st.write(results)
+        
+    #     else:
+    #         st.write("No dividend data")
+      
+    #     st.plotly_chart(fig)
+
+    #     # Display the DataFrame with the dividend dates and closing price on those dates
+    #     div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
+     
+    #     # Loop through each dividend date and add rows from new_df for that date
+    #     for date in div_dates_with_prices.index:
+    #         symbol_row = new_df[new_df['symbol'] == symbol]
+    #         symbol_row['date'] = date
+    #         div_dates_with_prices = pd.concat([div_dates_with_prices, symbol_row], axis=0)
+
+    #     st.write("Dividend Dates with Closing Prices, Price Targets, and Analyst Targets:")
+    #     st.write(div_dates_with_prices)
+
+    #     # Add a title to the div/date chart
+    #     div_chart_title = f'Dividends Over Time for {symbol}'
+    #     plot_dividends(divs, color, title=div_chart_title)
+
+    #     show_dividend_targets(divs, prices)
+    #     quote_data, results = calculate_dividend_metrics(divs, prices)
+    #     st.write("Dividend Metrics:")
+    #     st.write(pd.DataFrame(results, columns=["Year", "To Reach 50%", "To Reach 75%", "To Reach 100%"]))
+    # else:
+    #     st.write("No dividend data available for this stock.")
 
     
 def plot_dividends(divs, color, title=None):
