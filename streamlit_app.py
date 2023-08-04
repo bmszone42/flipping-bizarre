@@ -131,6 +131,8 @@ def perform_analysis(symbol, data, color, new_df):
             
             st.plotly_chart(fig)
 
+            div_dates = div_dates.tz_convert(prices.index.tz)
+
             # Display the DataFrame with the dividend dates and closing price on those dates
             div_dates_with_prices = divs[divs['Dividends'] > 0].join(prices, how='inner')
             st.write("Dividend Dates with Closing Prices:")
@@ -143,7 +145,12 @@ def perform_analysis(symbol, data, color, new_df):
             # Set Dividend Date as index
             div_dates_with_prices = div_dates_with_prices.set_index('Dividend Date')
             div_dates_with_prices['Dividend Amount'] = divs.loc[div_dates, 'Dividends'].values
-            div_dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'].values
+
+            try:
+              div_dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'] 
+            except KeyError:
+              div_dates_with_prices['Closing Price'] = prices.nearest(div_dates).loc[div_dates]
+            #div_dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'].values
             div_dates_with_prices['Price Next Day'] = prices.loc[div_dates + pd.Timedelta(days=1), 'Close'].values
 
             #div_dates_with_prices['Price Next 2 Days'] = prices.loc[div_dates + pd.Timedelta(days=2), 'Close'].values
