@@ -144,14 +144,14 @@ def perform_analysis(symbol, data, color, new_df):
 
             # Set Dividend Date as index
             dates_with_prices = dates_with_prices.set_index('Dividend Date')
-            dates_with_prices['Dividend Amount'] = divs.loc[div_dates, 'Dividends'].values
+            dates_with_prices['Dividend ($)'] = divs.loc[div_dates, 'Dividends'].values
 
             try:
               dates_with_prices['Closing Price'] = prices.loc[div_dates, 'Close'].values
             except KeyError:
               dates_with_prices['Closing Price'] = prices.nearest(div_dates).loc[div_dates].values
                 
-            dates_with_prices['Price Next Day'] = prices.loc[div_dates + pd.Timedelta(days=1), 'Close'].values
+            #dates_with_prices['Price Next Day'] = prices.loc[div_dates + pd.Timedelta(days=1), 'Close'].values
 
              # Calculate the price one week after the dividend
             prices_shifted_1_week = prices.shift(-5)
@@ -163,11 +163,11 @@ def perform_analysis(symbol, data, color, new_df):
             dates_with_prices['Price at 4 Weeks'] = prices_shifted_4_weeks.loc[div_dates, 'Close'].values
     
             # Calculate the percentage change
-            dates_with_prices['% Change at 1 Week (%)'] = ((dates_with_prices['Price at 1 Week'] - dates_with_prices['Closing Price']) / dates_with_prices['Closing Price']) * 100
-            dates_with_prices['% Change at 2 Weeks (%)'] = ((dates_with_prices['Price at 2 Weeks'] - dates_with_prices['Closing Price']) / dates_with_prices['Closing Price']) * 100
-            dates_with_prices['% Change at 4 Weeks (%)'] = ((dates_with_prices['Price at 4 Weeks'] - dates_with_prices['Closing Price']) / dates_with_prices['Closing Price']) * 100
+            dates_with_prices['Change at 1 Week (%)'] = ((dates_with_prices['Price at 1 Week'] - dates_with_prices['Closing Price']) / dates_with_prices['Closing Price']) * 100
+            dates_with_prices['Change at 2 Weeks (%)'] = ((dates_with_prices['Price at 2 Weeks'] - dates_with_prices['Closing Price']) / dates_with_prices['Closing Price']) * 100
+            dates_with_prices['Change at 4 Weeks (%)'] = ((dates_with_prices['Price at 4 Weeks'] - dates_with_prices['Closing Price']) / dates_with_prices['Closing Price']) * 100
     
-            st.write("Dividend Dates with More Closing Prices:")
+            st.write("Dividend Dates with Closing Prices:")
             st.write(dates_with_prices)
 
         else:
