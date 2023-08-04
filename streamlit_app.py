@@ -134,7 +134,7 @@ def perform_analysis(symbol, data, color, new_df):
             prices_after_dividends = []
             
             # Calculate the prices at 10, 20, and 30 days after the dividend dates
-            for dividend_date in div_dates.index:
+            for dividend_date in div_dates_with_prices.index:
                 for days in [10, 20, 30]:
                     date_after_dividend = dividend_date + pd.Timedelta(days=days)
                     if date_after_dividend in div_dates_with_prices.index:
